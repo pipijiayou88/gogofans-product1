@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoGoFans 项目总览</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .header h1 {
+      font-size: 48px;
+      background: linear-gradient(135deg, #FF6B9D, #C44BFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+    .header p {
+      color: #8888A0;
+      font-size: 16px;
+      margin-top: 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      width: 100%;
+    }
+    .card {
+      background: rgba(22, 22, 42, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(196, 75, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(196, 75, 255, 0.15);
+    }
+    .card .icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .card p {
+      color: #8888A0;
+      font-size: 13px;
+      line-height: 1.6;
+      flex: 1;
+    }
+    .card .tag {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #FF6B9D33, #C44BFF33);
+      color: #C44BFF;
+      align-self: flex-start;
+    }
+    .footer {
+      margin-top: 40px;
+      color: #55556A;
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>GoGoFans</h1>
+    <p>粉丝创作社区 · 项目文档总览</p>
+  </div>
+
+  <div class="grid">
+    <a href="mindmap-full.html" class="card" target="_blank">
+      <div class="icon">🧠</div>
+      <h3>思维导图 · 完整版</h3>
+      <p>GoGoFans 产品立项完整思维导图，包含产品定位、用户价值、商业模式等全方位分析</p>
+      <span class="tag">思维导图</span>
+    </a>
+
+    <a href="mindmap.html" class="card" target="_blank">
+      <div class="icon">🗺️</div>
+      <h3>思维导图 · 简版</h3>
+      <p>精简版产品思维导图，快速了解 GoGoFans 核心架构</p>
+      <span class="tag">思维导图</span>
+    </a>
+
+    <a href="product-prototype.html" class="card" target="_blank">
+      <div class="icon">📱</div>
+      <h3>产品原型 · 高保真</h3>
+      <p>GoGoFans 移动端高保真产品原型，包含首页、动态、消息、个人中心等核心页面</p>
+      <span class="tag">原型设计</span>
+    </a>
+
+    <a href="product-plan.html" class="card" target="_blank">
+      <div class="icon">📋</div>
+      <h3>产品方案文档</h3>
+      <p>GoGoFans 产品方案 HTML 版，详细的产品规划与功能说明</p>
+      <span class="tag">方案文档</span>
+    </a>
+
+    <a href="GOGOFANS产品方案.md" class="card" target="_blank">
+      <div class="icon">📝</div>
+      <h3>产品方案 · Markdown</h3>
+      <p>GoGoFans 产品方案 Markdown 源文件版本</p>
+      <span class="tag">方案文档</span>
+    </a>
+
+    <a href="prototype-v1.html" class="card" target="_blank">
+      <div class="icon">🎨</div>
+      <h3>原型 · 早期版本</h3>
+      <p>CreatorHub 早期产品原型，订阅制创作者平台设计稿</p>
+      <span class="tag">原型设计</span>
+    </a>
+
+    <a href="product-mindmap/index.html" class="card" target="_blank">
+      <div class="icon">🔮</div>
+      <h3>产品立项思维导图</h3>
+      <p>产品立项方案思维导图，展示产品规划全景</p>
+      <span class="tag">思维导图</span>
+    </a>
+  </div>
+
+  <div class="footer">
+    GoGoFans · 粉丝创作社区 © 2026
+  </div>
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CreatorHub - 订阅制创作者平台</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #0A0A1A;
+      color: #FFFFFF;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+    .phone-frame {
+      width: 393px; height: 852px;
+      margin: 20px auto;
+      background: #0A0A1A;
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 20px 60px rgba(0,0,0,0.8);
+    }
+    @media (max-width: 420px) {
+      .phone-frame { width: 100%; height: 100vh; margin: 0; border-radius: 0; box-shadow: none; }
+    }
+    .safe-area { width: 100%; height: 100%; display: flex; flex-direction: column; }
+    :root {
+      --primary: #6C63FF; --primaryLight: #8B83FF; --secondary: #FF6584;
+      --bg: #0A0A1A; --surface: #16162A; --surfaceLight: #1E1E36;
+      --white: #FFFFFF; --lightGray: #C8C8D4; --gray: #8888A0; --darkGray: #55556A;
+      --glassBg: rgba(10,10,26,0.85); --glassBorder: rgba(255,255,255,0.08);
+      --heartRed: #FF3040; --verifiedBlue: #3897F0; --badgeRed: #FF3B30;
+      --tabGradient1: #6C63FF; --tabGradient2: #FF6584;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 50px; background: var(--glassBg);
+      padding: 0 24px; display: flex; align-items: flex-end;
+      justify-content: space-between; padding-bottom: 6px;
+      flex-shrink: 0; border-bottom: 0.5px solid var(--glassBorder);
+    }
+    .status-time { font-size: 14px; font-weight: 700; color: var(--white); }
+    .status-icons { font-size: 12px; color: var(--white); letter-spacing: 4px; }
+
+    /* Top Tab Bar */
+    .tab-bar {
+      background: var(--glassBg); border-bottom: 0.5px solid var(--glassBorder);
+      flex-shrink: 0; position: relative; z-index: 100;
+    }
+    .tab-row { display: flex; height: 52px; }
+    .tab-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; cursor: pointer;
+      -webkit-tap-highlight-color: transparent; user-select: none;
+    }
+    .tab-label {
+      font-size: 14px; font-weight: 600; color: var(--gray); transition: all 0.2s;
+    }
+    .tab-label.active { color: var(--white); font-weight: 800; font-size: 16px; }
+    .tab-label-en { font-size: 10px; color: var(--gray); opacity: 0.6; margin-top: 1px; transition: all 0.2s; }
+    .tab-label-en.active { opacity: 1; color: var(--lightGray); }
+    .tab-indicator {
+      position: absolute; bottom: 0; left: 0; width: 131px; height: 3px;
+      display: flex; justify-content: center;
+      transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .tab-indicator-inner {
+      width: 78.6px; height: 100%; border-radius: 2px;
+      background: linear-gradient(90deg, var(--tabGradient1), var(--tabGradient2));
+    }
+
+    /* Content */
+    .content-wrapper { flex: 1; overflow: hidden; position: relative; }
+    .content-scroll {
+      display: flex; height: 100%;
+      transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .page {
+      width: 393px; height: 100%; flex-shrink: 0;
+      overflow-y: auto; overflow-x: hidden;
+    }
+    .page::-webkit-scrollbar { display: none; }
+    .page-inner { padding-top: 12px; padding-bottom: 100px; }
+
+    /* Who To Follow */
+    .w2f-section { margin: 16px 0 12px 0; }
+    .w2f-header { display: flex; align-items: baseline; padding: 0 16px; margin-bottom: 12px; }
+    .w2f-title { font-size: 16px; font-weight: 700; color: var(--white); margin-right: 8px; }
+    .w2f-subtitle { font-size: 12px; color: var(--gray); }
+    .w2f-scroll {
+      display: flex; overflow-x: auto; padding: 0 16px; gap: 12px;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .w2f-scroll::-webkit-scrollbar { display: none; }
+    .rec-card {
+      width: 140px; height: 200px; background: #ffffff; border-radius: 14px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 16px 12px; flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .rec-avatar { width: 56px; height: 56px; border-radius: 28px; object-fit: cover; background: #f0f0f0; margin-bottom: 8px; }
+    .rec-name-row { display: flex; align-items: center; margin-bottom: 2px; max-width: 116px; }
+    .rec-nickname { font-size: 14px; font-weight: 700; color: #1a1a2e; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rec-verified { width: 14px; height: 14px; margin-left: 3px; }
+    .rec-username { font-size: 10px; color: #8e8e93; margin-bottom: 12px; }
+    .rec-follow-btn {
+      background: var(--primary); color: #ffffff; border: none;
+      padding: 8px 20px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      cursor: pointer; min-width: 100px; text-align: center; transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .rec-follow-btn.followed { background: #e8e8ed; color: #8e8e93; border: 1px solid #d1d1d6; }
+
+    /* Content Card */
+    .content-card { height: 554px; margin: 0 12px 12px 12px; border-radius: 14px; overflow: hidden; position: relative; }
+    .content-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .content-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(transparent, rgba(0,0,0,0.85)); pointer-events: none; }
+    .content-bottom { position: absolute; bottom: 0; left: 0; right: 0; display: flex; align-items: center; padding: 16px 20px 24px; z-index: 10; }
+    .content-creator-avatar { width: 40px; height: 40px; border-radius: 20px; object-fit: cover; border: 2px solid rgba(255,255,255,0.3); flex-shrink: 0; }
+    .content-creator-info { flex: 1; margin-left: 12px; min-width: 0; }
+    .content-creator-name { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+    .content-creator-bio { font-size: 12px; color: var(--lightGray); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .content-sub-btn { background: var(--primary); color: var(--white); border: none; padding: 8px 20px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
+    .content-sub-btn.subscribed { background: rgba(255,255,255,0.2); border: 1px solid var(--glassBorder); }
+    .content-actions { position: absolute; right: 12px; bottom: 100px; display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 10; }
+    .action-btn { display: flex; flex-direction: column; align-items: center; margin-bottom: 8px; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+    .action-icon-circle { width: 44px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
+    .action-icon { font-size: 20px; line-height: 1; }
+    .action-count { font-size: 10px; color: var(--white); font-weight: 600; }
+    .action-label { font-size: 9px; color: var(--gray); margin-top: -1px; }
+
+    /* Compact Card */
+    .compact-card { background: var(--surface); border-radius: 10px; overflow: hidden; margin: 0 16px 12px 16px; }
+    .compact-img { width: 100%; height: 160px; object-fit: cover; display: block; }
+    .compact-info { padding: 12px; }
+    .compact-creator-row { display: flex; align-items: center; }
+    .compact-creator-avatar { width: 32px; height: 32px; border-radius: 16px; object-fit: cover; }
+    .compact-text-col { flex: 1; margin-left: 8px; min-width: 0; }
+    .compact-nickname { font-size: 14px; font-weight: 700; color: var(--white); }
+    .compact-username { font-size: 12px; color: var(--gray); }
+    .compact-badge { background: rgba(255,255,255,0.1); border: 1px solid var(--glassBorder); padding: 4px 12px; border-radius: 999px; font-size: 10px; color: var(--lightGray); font-weight: 600; }
+    .compact-stats { display: flex; margin-top: 8px; gap: 16px; }
+    .compact-stat { font-size: 12px; color: var(--gray); }
+
+    /* Sub Header */
+    .sub-header { padding: 0 20px; margin-bottom: 16px; }
+    .sub-header-title { font-size: 24px; font-weight: 800; color: var(--white); margin-bottom: 4px; }
+    .sub-header-subtitle { font-size: 14px; color: var(--gray); }
+
+    /* Empty State */
+    .empty-state { display: flex; flex-direction: column; align-items: center; padding: 0 32px; padding-top: 60px; }
+    .empty-icon-circle { width: 80px; height: 80px; border-radius: 40px; background: var(--surfaceLight); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    .empty-icon { font-size: 36px; }
+    .empty-title { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .empty-subtitle { font-size: 14px; color: var(--gray); text-align: center; line-height: 22px; margin-bottom: 24px; }
+    .empty-btn { background: var(--primary); color: var(--white); border: none; padding: 12px 32px; border-radius: 999px; font-size: 16px; font-weight: 700; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+    /* Bottom Nav */
+    .bottom-nav { display: flex; background: var(--glassBg); border-top: 0.5px solid var(--glassBorder); padding: 8px 0 12px; flex-shrink: 0; position: relative; }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 0; cursor: pointer; position: relative; -webkit-tap-highlight-color: transparent; user-select: none; }
+    .nav-icon-wrap { position: relative; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+    .nav-icon { font-size: 22px; opacity: 0.6; transition: opacity 0.2s; }
+    .nav-icon.active { opacity: 1; }
+    .nav-label { font-size: 10px; color: var(--gray); margin-top: 2px; font-weight: 500; transition: all 0.2s; }
+    .nav-label.active { color: var(--white); font-weight: 700; }
+    .nav-dot { position: absolute; top: 0; width: 16px; height: 3px; border-radius: 2px; background: var(--primary); }
+    .nav-badge { position: absolute; top: -4px; right: -6px; background: var(--badgeRed); width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .nav-badge-text { color: #ffffff; font-size: 10px; font-weight: 800; }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div class="safe-area">
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span class="status-time">12:52</span>
+        <span class="status-icons">📶 📶 🔋</span>
+      </div>
+
+      <!-- Top Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab-row" id="tabRow">
+          <div class="tab-item" data-index="0"><span class="tab-label" id="tabLabel0">全部</span><span class="tab-label-en" id="tabLabelEn0">All</span></div>
+          <div class="tab-item" data-index="1"><span class="tab-label" id="tabLabel1">已订阅</span><span class="tab-label-en" id="tabLabelEn1">Subscribed</span></div>
+          <div class="tab-item" data-index="2"><span class="tab-label active" id="tabLabel2">为你推荐</span><span class="tab-label-en active" id="tabLabelEn2">For You</span></div>
+        </div>
+        <div class="tab-indicator" id="tabIndicator" style="transform: translateX(262px);">
+          <div class="tab-indicator-inner"></div>
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-wrapper">
+        <div class="content-scroll" id="contentScroll" style="transform: translateX(-786px);">
+          <div class="page"><div class="page-inner" id="allContent"></div></div>
+          <div class="page"><div class="page-inner" id="subContent"></div></div>
+          <div class="page"><div class="page-inner" id="forYouContent"></div></div>
+        </div>
+      </div>
+
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <div class="nav-item" data-nav="home">
+          <div class="nav-icon-wrap"><span class="nav-icon active" id="navIconHome">🏡</span><div class="nav-dot" style="display:block"></div></div>
+          <span class="nav-label active" id="navLabelHome">首页</span>
+        </div>
+        <div class="nav-item" data-nav="search">
+          <div class="nav-icon-wrap"><span class="nav-icon" id="navIconSearch">🔍</span></div>
+          <span class="nav-label" id="navLabelSearch">搜索</span>
+        </div>
+        <div class="nav-item" data-nav="messages">
+          <div class="nav-icon-wrap"><span class="nav-icon" id="navIconMsg">💬</span><div class="nav-badge"><span class="nav-badge-text">3</span></div></div>
+          <span class="nav-label" id="navLabelMsg">消息</span>
+        </div>
+        <div class="nav-item" data-nav="profile">
+          <div class="nav-icon-wrap"><span class="nav-icon" id="navIconProfile">👤</span></div>
+          <span class="nav-label" id="navLabelProfile">我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Mock Data =====
+    const creators = [
+      { id:'c1', nickname:'Lillie', username:'@lillie_art', avatar:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face', bio:'Digital Artist & Illustrator 🎨', isVerified:true, isSubscribed:true, followers:152000 },
+      { id:'c2', nickname:'Marcus Chen', username:'@marcuschen', avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face', bio:'Photographer | Traveler 🌍', isVerified:true, isSubscribed:true, followers:89000 },
+      { id:'c3', nickname:'Sofia', username:'@sofia_music', avatar:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face', bio:'Singer & Songwriter 🎵', isVerified:true, isSubscribed:false, followers:234000 },
+      { id:'c4', nickname:'Alex Rivera', username:'@alexrivera', avatar:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face', bio:'Fitness Coach 💪', isVerified:false, isSubscribed:false, followers:45000 },
+      { id:'c5', nickname:'Yuki Tanaka', username:'@yuki_tanaka', avatar:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face', bio:'Vlogger | Japan Travel 🗾', isVerified:true, isSubscribed:false, followers:178000 },
+      { id:'c6', nickname:'Emma Wilson', username:'@emmawilson', avatar:'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=face', bio:'Food Blogger 🍜', isVerified:false, isSubscribed:false, followers:67000 },
+      { id:'c7', nickname:'Noah', username:'@noah_codes', avatar:'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face', bio:'Full Stack Developer 💻', isVerified:false, isSubscribed:false, followers:32000 },
+      { id:'c8', nickname:'Aria', username:'@aria_beauty', avatar:'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=face', bio:'Makeup Artist 💄', isVerified:true, isSubscribed:false, followers:156000 },
+    ];
+    const posts = [
+      { id:'p1', creatorId:'c1', thumbnail:'https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=800&h=1200&fit=crop', caption:'New digital artwork! What do you think? 🎨✨', type:'image', publishedAt:'2026-05-10T14:30:00Z', engagement:{likes:12300,comments:456,shares:1200} },
+      { id:'p2', creatorId:'c2', thumbnail:'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=1200&fit=crop', caption:'Golden hour in the mountains 🏔️🌅', type:'image', publishedAt:'2026-05-10T12:00:00Z', engagement:{likes:8900,comments:234,shares:890} },
+      { id:'p3', creatorId:'c3', thumbnail:'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&h=1200&fit=crop', caption:'New single dropping next week! 🎵🔥', type:'image', publishedAt:'2026-05-09T20:00:00Z', engagement:{likes:25400,comments:1200,shares:3400} },
+      { id:'p4', creatorId:'c4', thumbnail:'https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=800&h=1200&fit=crop', caption:'Morning workout routine 💪☀️', type:'image', publishedAt:'2026-05-09T08:00:00Z', engagement:{likes:5600,comments:189,shares:450} },
+      { id:'p5', creatorId:'c5', thumbnail:'https://images.unsplash.com/photo-1528164344705-47542687000d?w=800&h=1200&fit=crop', caption:'Hidden gem in Kyoto 🏯🌸', type:'image', publishedAt:'2026-05-08T16:00:00Z', engagement:{likes:18700,comments:678,shares:2100} },
+      { id:'p6', creatorId:'c6', thumbnail:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=1200&fit=crop', caption:'Best ramen in Tokyo! 🍜🤤', type:'image', publishedAt:'2026-05-08T11:00:00Z', engagement:{likes:9200,comments:345,shares:1100} },
+      { id:'p7', creatorId:'c1', thumbnail:'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800&h=1200&fit=crop', caption:'Digital painting process video 🎨', type:'image', publishedAt:'2026-05-07T18:00:00Z', engagement:{likes:15300,comments:567,shares:1800} },
+      { id:'p8', creatorId:'c7', thumbnail:'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=1200&fit=crop', caption:'Late night coding session 💻🌙', type:'image', publishedAt:'2026-05-07T23:00:00Z', engagement:{likes:3400,comments:123,shares:210} },
+      { id:'p9', creatorId:'c8', thumbnail:'https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=800&h=1200&fit=crop', caption:"Valentine's day makeup tutorial 💄❤️", type:'image', publishedAt:'2026-05-06T15:00:00Z', engagement:{likes:21000,comments:890,shares:2900} },
+      { id:'p10', creatorId:'c3', thumbnail:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=1200&fit=crop', caption:'Acoustic cover of "Stay" 🎸', type:'image', publishedAt:'2026-05-06T10:00:00Z', engagement:{likes:9800,comments:432,shares:1500} },
+      { id:'p11', creatorId:'c2', thumbnail:'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=1200&fit=crop', caption:'Nature never ceases to amaze 🌿', type:'image', publishedAt:'2026-05-05T14:00:00Z', engagement:{likes:11200,comments:345,shares:980} },
+      { id:'p12', creatorId:'c5', thumbnail:'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&h=1200&fit=crop', caption:'Sunset at Shibuya Sky 🌆', type:'image', publishedAt:'2026-05-05T09:00:00Z', engagement:{likes:14600,comments:523,shares:1700} },
+    ];
+    const recommendedPosts = posts.slice(0,6);
+    const allPosts = posts;
+    const subscribedPosts = posts.filter(p => p.creatorId==='c1'||p.creatorId==='c2');
+
+    // ===== Helpers =====
+    function formatCount(n){ if(n>=1e6) return (n/1e6).toFixed(1)+'M'; if(n>=1e3) return (n/1e3).toFixed(1)+'K'; return ''+n; }
+    function getCreator(id){ return creators.find(c=>c.id===id); }
+
+    // ===== State =====
+    let activeTab = 2;
+    let followState = {};
+    let likeState = {};
+    let subBtnState = {};
+
+    // ===== Touch Slider =====
+    let touchStartX = 0, touchEndX = 0;
+
+    // ===== Render WhoToFollow =====
+    function renderWhoToFollow() {
+      return '<div class="w2f-section"><div class="w2f-header"><span class="w2f-title">为你推荐创作者</span><span class="w2f-subtitle">Who To Follow</span></div><div class="w2f-scroll">' +
+        creators.slice(0,6).map(c => {
+          const f = !!followState[c.id];
+          return '<div class="rec-card"><img class="rec-avatar" src="'+c.avatar+'" alt="'+c.nickname+'" loading="lazy" /><div class="rec-name-row"><span class="rec-nickname">'+c.nickname+'</span>' +
+            (c.isVerified ? '<svg class="rec-verified" viewBox="0 0 24 24" fill="#3897F0"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>' : '') +
+            '</div><span class="rec-username">'+c.username+'</span><button class="rec-follow-btn'+(f?' followed':'')+'" data-creator="'+c.id+'">'+(f?'已关注':'关注')+'</button></div>';
+        }).join('') + '</div></div>';
+    }
+
+    // ===== Render Content Card (full) =====
+    function renderCard(post) {
+      const cr = getCreator(post.creatorId);
+      if(!cr) return '';
+      const lk = post.id+'_liked', ck = post.id+'_count';
+      const liked = !!likeState[lk];
+      const count = likeState[ck]!==undefined ? likeState[ck] : post.engagement.likes;
+      const hIcon = liked ? '❤️' : '🤍';
+      return '<div class="content-card"><img class="content-img" src="'+post.thumbnail+'" alt="'+post.caption+'" loading="lazy" /><div class="content-overlay"></div>' +
+        '<div class="content-bottom"><img class="content-creator-avatar" src="'+cr.avatar+'" alt="'+cr.nickname+'" loading="lazy" /><div class="content-creator-info"><div class="content-creator-name">'+cr.nickname+(cr.isVerified?' ✔️':'')+'</div><div class="content-creator-bio">'+cr.bio+'</div></div>' +
+        '<button class="content-sub-btn'+(cr.isSubscribed?' subscribed':'')+'" data-card-sub="'+post.id+'">'+(cr.isSubscribed?'已订阅':'订阅')+'</button></div>' +
+        '<div class="content-actions"><div class="action-btn" data-like="'+post.id+'"><div class="action-icon-circle"><span class="action-icon" style="color:'+(liked?'#FF3040':'#fff')+'">'+hIcon+'</span></div><span class="action-count">'+formatCount(count)+'</span><span class="action-label">赞</span></div>' +
+        '<div class="action-btn"><div class="action-icon-circle"><span class="action-icon">💬</span></div><span class="action-count">'+formatCount(post.engagement.comments)+'</span><span class="action-label">评论</span></div>' +
+        '<div class="action-btn"><div class="action-icon-circle"><span class="action-icon">🔗</span></div><span class="action-count">'+formatCount(post.engagement.shares)+'</span><span class="action-label">分享</span></div></div></div>';
+    }
+
+    // ===== Render Compact Card =====
+    function renderCompact(post) {
+      const cr = getCreator(post.creatorId);
+      if(!cr) return '';
+      const lk = post.id+'_liked', ck = post.id+'_count';
+      const count = likeState[ck]!==undefined ? likeState[ck] : post.engagement.likes;
+      return '<div class="compact-card"><img class="compact-img" src="'+post.thumbnail+'" alt="'+post.caption+'" loading="lazy" /><div class="compact-info"><div class="compact-creator-row"><img class="compact-creator-avatar" src="'+cr.avatar+'" alt="'+cr.nickname+'" loading="lazy" /><div class="compact-text-col"><div class="compact-nickname">'+cr.nickname+(cr.isVerified?' ✔️':'')+'</div><div class="compact-username">'+cr.username+'</div></div><span class="compact-badge">已订阅</span></div><div class="compact-stats"><span class="compact-stat">❤️ '+formatCount(count)+'</span><span class="compact-stat">💬 '+formatCount(post.engagement.comments)+'</span></div></div></div>';
+    }
+
+    // ===== Render All Pages =====
+    function renderAll() {
+      document.getElementById('allContent').innerHTML = allPosts.map(p=>renderCard(p)).join('');
+    }
+    function renderSub() {
+      const has = subscribedPosts.length>0;
+      let html = '<div class="sub-header"><div class="sub-header-title">已订阅</div><div class="sub-header-subtitle">关注 '+creators.filter(c=>c.isSubscribed).length+' 位创作者</div></div>';
+      if(has) {
+        html += subscribedPosts.map(p=>renderCompact(p)).join('');
+      } else {
+        html += '<div class="empty-state"><div class="empty-icon-circle"><span class="empty-icon">🔔</span></div><div class="empty-title">还没有订阅内容</div><div class="empty-subtitle">订阅喜欢的创作者后，他们的最新内容就会出现在这里</div><button class="empty-btn" id="goExplore">去发现创作者</button></div>';
+      }
+      document.getElementById('subContent').innerHTML = html;
+    }
+    function renderForYou() {
+      let html = '';
+      recommendedPosts.forEach((p, i) => {
+        if(i===2) html += renderWhoToFollow();
+        html += renderCard(p);
+      });
+      document.getElementById('forYouContent').innerHTML = html;
+    }
+
+    // ===== Switch Tab =====
+    const pageWidth = 393;
+    const tabInd = document.getElementById('tabIndicator');
+
+    function switchTab(idx) {
+      if(idx===activeTab) return;
+      activeTab = idx;
+      // Update tab labels
+      for(let i=0;i<3;i++){
+        document.getElementById('tabLabel'+i).className = 'tab-label'+(i===idx?' active':'');
+        document.getElementById('tabLabelEn'+i).className = 'tab-label-en'+(i===idx?' active':'');
+      }
+      // Move indicator
+      tabInd.style.transform = 'translateX('+(idx*131)+'px)';
+      // Scroll content
+      document.getElementById('contentScroll').style.transform = 'translateX(-'+(idx*393)+'px)';
+      // Refresh content if needed
+      if(idx===0) renderAll();
+      if(idx===1) renderSub();
+      if(idx===2) renderForYou();
+    }
+
+    // ===== Event Handling =====
+    document.addEventListener('DOMContentLoaded', function(){
+      // Initial render
+      renderForYou();
+
+      // Tab click delegation
+      document.querySelectorAll('.tab-item').forEach(el => {
+        el.addEventListener('click', function(e) {
+          const idx = parseInt(this.getAttribute('data-index'));
+          switchTab(idx);
+        });
+      });
+
+      // Follow button delegation (on pages via click)
+      document.getElementById('forYouContent').addEventListener('click', function(e) {
+        const btn = e.target.closest('.rec-follow-btn');
+        if(btn) {
+          const cid = btn.getAttribute('data-creator');
+          followState[cid] = !followState[cid];
+          renderForYou();
+          return;
+        }
+        // Like button
+        const likeBtn = e.target.closest('[data-like]');
+        if(likeBtn) {
+          const pid = likeBtn.getAttribute('data-like');
+          const lk = pid+'_liked', ck = pid+'_count';
+          const post = posts.find(p=>p.id===pid);
+          if(post) {
+            if(likeState[lk]) {
+              likeState[ck] = (likeState[ck]||post.engagement.likes)-1;
+            } else {
+              likeState[ck] = (likeState[ck]||post.engagement.likes)+1;
+            }
+            likeState[lk] = !likeState[lk];
+            renderForYou();
+          }
+          return;
+        }
+        // Card sub button
+        const subBtn = e.target.closest('[data-card-sub]');
+        if(subBtn) {
+          const pid = subBtn.getAttribute('data-card-sub');
+          const post = posts.find(p=>p.id===pid);
+          if(post) {
+            const cr = getCreator(post.creatorId);
+            if(cr) {
+              cr.isSubscribed = !cr.isSubscribed;
+              renderForYou();
+            }
+          }
+          return;
+        }
+      });
+
+      // All page events
+      document.getElementById('allContent').addEventListener('click', function(e) {
+        const likeBtn = e.target.closest('[data-like]');
+        if(likeBtn) {
+          const pid = likeBtn.getAttribute('data-like');
+          const lk = pid+'_liked', ck = pid+'_count';
+          const post = posts.find(p=>p.id===pid);
+          if(post) {
+            if(likeState[lk]) {
+              likeState[ck] = (likeState[ck]||post.engagement.likes)-1;
+            } else {
+              likeState[ck] = (likeState[ck]||post.engagement.likes)+1;
+            }
+            likeState[lk] = !likeState[lk];
+            renderAll();
+          }
+          return;
+        }
+        const subBtn = e.target.closest('[data-card-sub]');
+        if(subBtn) {
+          const pid = subBtn.getAttribute('data-card-sub');
+          const post = posts.find(p=>p.id===pid);
+          if(post) {
+            const cr = getCreator(post.creatorId);
+            if(cr) { cr.isSubscribed = !cr.isSubscribed; renderAll(); }
+          }
+          return;
+        }
+      });
+
+      // Sub page events
+      document.getElementById('subContent').addEventListener('click', function(e) {
+        const exploreBtn = e.target.closest('#goExplore');
+        if(exploreBtn) { switchTab(2); return; }
+      });
+
+      // Bottom nav
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.addEventListener('click', function() {
+          document.querySelectorAll('.nav-icon').forEach(i=>i.classList.remove('active'));
+          document.querySelectorAll('.nav-label').forEach(i=>i.classList.remove('active'));
+          document.querySelectorAll('.nav-dot').forEach(i=>i.style.display='none');
+          const nav = this.getAttribute('data-nav');
+          const iconMap = {home:'🏡',search:'🔍',messages:'💬',profile:'👤'};
+          const iconDefault = {home:'🏠',search:'🔍',messages:'💬',profile:'👤'};
+          const iconEl = document.getElementById('navIcon'+nav.charAt(0).toUpperCase()+nav.slice(1));
+          const labelEl = document.getElementById('navLabel'+nav.charAt(0).toUpperCase()+nav.slice(1));
+          if(iconEl) { iconEl.textContent = iconMap[nav]||iconDefault[nav]; iconEl.classList.add('active'); }
+          if(labelEl) { labelEl.classList.add('active'); }
+          const dot = document.getElementById('navDot'+nav.charAt(0).toUpperCase()+nav.slice(1));
+          if(dot) dot.style.display = 'block';
+        });
+      });
+
+      // Touch/swipe support
+      const wrapper = document.querySelector('.content-wrapper');
+      wrapper.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+      }, {passive: true});
+      wrapper.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if(Math.abs(diff) > 50) {
+          if(diff > 0 && activeTab < 2) switchTab(activeTab+1);
+          else if(diff < 0 && activeTab > 0) switchTab(activeTab-1);
+        }
+      }, {passive: true});
+
+      // Mouse drag support for desktop
+      let mouseDown = false, mouseStartX = 0;
+      wrapper.addEventListener('mousedown', function(e) {
+        mouseDown = true;
+        mouseStartX = e.screenX;
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove', function(e) {
+        if(!mouseDown) return;
+        // subtle visual feedback
+      });
+      document.addEventListener('mouseup', function(e) {
+        if(!mouseDown) return;
+        mouseDown = false;
+        const diff = mouseStartX - e.screenX;
+        if(Math.abs(diff) > 50) {
+          if(diff > 0 && activeTab < 2) switchTab(activeTab+1);
+          else if(diff < 0 && activeTab > 0) switchTab(activeTab-1);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

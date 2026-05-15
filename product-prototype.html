@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GoGoFans · 产品原型</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #0A0A1A; color: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    }
+    :root {
+      --pink: #FF6B9D; --purple: #C44BFF; --accent: #FFB347;
+      --bg: #0A0A1A; --surface: #16162A; --surfaceL: #1E1E36; --surfaceH: #2A2A4A;
+      --white: #fff; --text: #C8C8D4; --gray: #8888A0; --dark: #55556A;
+      --glass: rgba(10,10,26,0.85); --border: rgba(255,255,255,0.08);
+      --heart: #FF3040; --green: #34D399;
+    }
+    .app-header {
+      background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 0.5px solid var(--border); padding: 12px 20px;
+      display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;
+    }
+    .logo { font-size: 22px; font-weight: 900; background: linear-gradient(135deg, var(--pink), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; }
+    .logo span { font-weight: 300; font-size: 14px; -webkit-text-fill-color: var(--gray); margin-left: 4px; }
+    .hdr-actions { display: flex; gap: 16px; }
+    .hdr-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; padding: 4px; position: relative; }
+    .hdr-btn .badge { position: absolute; top: -2px; right: -2px; width: 16px; height: 16px; border-radius: 8px; background: #FF3B30; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+    .main { max-width: 800px; margin: 0 auto; padding: 0 16px 100px; }
+    .sec-title { font-size: 18px; font-weight: 800; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px; }
+    .sec-title .more { font-size: 13px; font-weight: 600; color: var(--pink); cursor: pointer; margin-left: auto; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; gap: 6px; transition: .2s; }
+    .btn-p { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
+    .btn-p:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-o { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-o:hover { border-color: var(--gray); color: var(--white); }
+    .btn-g { background: var(--surfaceL); color: var(--text); }
+    .btn-sm { padding: 5px 14px; font-size: 11px; }
+    .btn-lg { padding: 12px 28px; font-size: 15px; }
+    .card { background: var(--surface); border-radius: 14px; overflow: hidden; margin-bottom: 12px; border: 0.5px solid var(--border); }
+    .h-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+    .h-scroll::-webkit-scrollbar { display: none; }
+    .divider { height: 0.5px; background: var(--border); margin: 16px 0; }
+    .flex { display: flex; } .gap-8 { gap: 8px; } .gap-12 { gap: 12px; } .mt-8 { margin-top: 8px; } .mt-16 { margin-top: 16px; }
+    .items-center { align-items: center; } .justify-between { justify-content: space-between; } .text-center { text-align: center; }
+    .tag { background: var(--surfaceL); padding: 3px 10px; border-radius: 999px; font-size: 11px; color: var(--gray); }
+    .page-s { display: none; } .page-s.active { display: block; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Mode Switch */
+    .mode-switch { display: flex; background: var(--surface); border-radius: 999px; padding: 3px; margin: 12px auto 16px; max-width: 280px; }
+    .mode-switch .m-btn { flex: 1; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; color: var(--gray); transition: .2s; }
+    .mode-switch .m-btn.active { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
+
+    /* Page Nav */
+    .pages-nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .pages-nav .p-btn { padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; transition: .2s; border: 0.5px solid var(--border); color: var(--gray); background: transparent; }
+    .pages-nav .p-btn:hover { border-color: var(--pink); color: var(--white); }
+    .pages-nav .p-btn.active { background: var(--pink); color: #fff; border-color: var(--pink); }
+
+    /* Creator Card */
+    .cc { min-width: 150px; background: var(--surface); border-radius: 14px; padding: 16px 14px; text-align: center; border: 0.5px solid var(--border); }
+    .cc .av { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 0 auto 8px; border: 2px solid var(--pink); }
+    .cc .nm { font-size: 13px; font-weight: 700; } .cc .fl { font-size: 11px; color: var(--gray); margin: 2px 0 8px; } .cc .pr { font-size: 12px; color: var(--pink); font-weight: 700; }
+
+    /* Feed Card */
+    .fc { margin-bottom: 16px; background: var(--surface); border-radius: 14px; overflow: hidden; border: 0.5px solid var(--border); }
+    .fc-hd { display: flex; align-items: center; padding: 12px 16px; gap: 10px; }
+    .fc-hd .av { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+    .fc-hd .info { flex: 1; } .fc-hd .info .nm { font-size: 13px; font-weight: 700; } .fc-hd .info .tm { font-size: 11px; color: var(--gray); }
+    .fc-md { position: relative; } .fc-md img { width: 100%; display: block; }
+    .fc-md .lock { position: absolute; inset: 0; background: rgba(0,0,0,.6); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .fc-md .lock .lk-icon { font-size: 36px; } .fc-md .lock .lk-pr { font-size: 16px; font-weight: 800; color: var(--accent); } .fc-md .lock .lk-d { font-size: 12px; color: var(--text); }
+    .fc-acts { display: flex; padding: 8px 16px; gap: 20px; }
+    .fc-acts .act { display: flex; align-items: center; gap: 4px; color: var(--gray); font-size: 13px; cursor: pointer; }
+    .fc-acts .act.liked { color: var(--heart); }
+    .fc-cap { padding: 0 16px 12px; font-size: 13px; color: var(--text); line-height: 1.5; }
+
+    /* Tiers */
+    .tiers { display: flex; gap: 10px; overflow-x: auto; padding: 4px 0 8px; } .tiers::-webkit-scrollbar { display: none; }
+    .tc { min-width: 180px; background: var(--surface); border-radius: 14px; padding: 16px; border: 1px solid var(--border); position: relative; }
+    .tc:hover { border-color: var(--pink); }
+    .tc.pop { border-color: var(--pink); background: linear-gradient(135deg, rgba(255,107,157,0.1), rgba(196,75,255,0.1)); }
+    .tc .pop-b { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--pink), var(--purple)); padding: 2px 12px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+    .tc .tn { font-size: 14px; font-weight: 700; } .tc .tp { font-size: 24px; font-weight: 900; color: var(--pink); margin: 8px 0; }
+    .tc .tp span { font-size: 12px; font-weight: 400; color: var(--gray); }
+    .tc .tf { list-style: none; font-size: 12px; color: var(--text); line-height: 2; }
+    .tc .tf li::before { content: "✓ "; color: var(--pink); }
+
+    /* Profile */
+    .pf-hd { position: relative; margin-bottom: 16px; }
+    .pf-cover { width: 100%; height: 160px; object-fit: cover; border-radius: 0 0 20px 20px; background: var(--surfaceL); }
+    .pf-info { padding: 0 16px; margin-top: -40px; display: flex; gap: 14px; align-items: flex-end; }
+    .pf-av { border: 3px solid var(--bg); border-radius: 50%; width: 80px; height: 80px; flex-shrink: 0; }
+    .pf-av img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .pf-txt { flex: 1; min-width: 0; padding-bottom: 4px; }
+    .pf-txt .nm { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .pf-txt .hd { font-size: 13px; color: var(--gray); }
+    .pf-txt .bio { font-size: 13px; color: var(--text); margin-top: 6px; line-height: 1.5; }
+    .pf-stats { display: flex; gap: 24px; margin-top: 12px; }
+    .pf-stats .st { text-align: center; } .pf-stats .st .n { font-size: 16px; font-weight: 800; } .pf-stats .st .l { font-size: 11px; color: var(--gray); }
+    .pf-acts { display: flex; gap: 8px; margin-top: 14px; }
+
+    /* Messages */
+    .msg-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); cursor: pointer; }
+    .msg-item .av { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+    .msg-item .ct { flex: 1; min-width: 0; }
+    .msg-item .ct .nm { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .msg-item .ct .nm .paid { background: var(--pink); font-size: 9px; padding: 1px 6px; border-radius: 4px; color: #fff; }
+    .msg-item .ct .pv { font-size: 12px; color: var(--gray); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .msg-item .tm { font-size: 11px; color: var(--dark); flex-shrink: 0; }
+    .msg-item .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pink); flex-shrink: 0; }
+
+    /* Wallet */
+    .wallet { background: linear-gradient(135deg, var(--pink), var(--purple)); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+    .wallet .lbl { font-size: 13px; opacity: .8; } .wallet .bal { font-size: 36px; font-weight: 900; margin: 4px 0 12px; }
+    .wallet .wa { display: flex; gap: 10px; } .wallet .wa .btn { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+
+    /* Creator Dashboard */
+    .dg { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .dc { background: var(--surface); border-radius: 12px; padding: 16px; border: 0.5px solid var(--border); }
+    .dc .lbl { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+    .dc .val { font-size: 28px; font-weight: 900; margin: 4px 0; }
+    .dc .chg { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+    .dc .chg.up { color: var(--green); } .dc .chg.down { color: #FF3B30; }
+
+    /* Content Grid */
+    .cg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .ct { aspect-ratio: 3/4; background: var(--surfaceL); border-radius: 8px; position: relative; overflow: hidden; cursor: pointer; }
+    .ct img { width: 100%; height: 100%; object-fit: cover; }
+    .ct .ov { position: absolute; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: .2s; }
+    .ct:hover .ov { opacity: 1; }
+    .ct .tp-b { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,.7); padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+    .ct .lk-b { position: absolute; top: 6px; right: 6px; background: var(--pink); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: #fff; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 0; margin: 0 -16px 16px; padding: 0 16px; border-bottom: 0.5px solid var(--border); }
+    .tab { padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--gray); cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab:hover { color: var(--white); } .tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+
+    /* Bottom Nav */
+    .bn { display: flex; background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid var(--border); padding: 8px 0 16px; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; }
+    .bn .ni { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; color: var(--gray); }
+    .bn .ni.active { color: var(--white); } .bn .ni .ic { font-size: 22px; position: relative; } .bn .ni .lb { font-size: 10px; font-weight: 600; }
+    .bn .ni .nb { position: absolute; top: -4px; right: -8px; background: #FF3B30; width: 16px; height: 16px; border-radius: 8px; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+
+    /* Comments */
+    .cmt { display: flex; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+    .cmt .av { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .cmt .b { flex: 1; } .cmt .b .nm { font-size: 12px; font-weight: 700; } .cmt .b .tx { font-size: 12px; color: var(--text); margin-top: 2px; } .cmt .b .tm { font-size: 10px; color: var(--dark); margin-top: 4px; }
+
+    /* Settings */
+    .si { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 0.5px solid var(--border); }
+    .si .l { display: flex; align-items: center; gap: 12px; } .si .l .ic { font-size: 18px; width: 24px; text-align: center; } .si .l .tx { font-size: 14px; } .si .r { color: var(--gray); font-size: 13px; }
+
+    /* Chat */
+    .chat-bubble { display: flex; gap: 8px; margin-bottom: 12px; align-items: flex-end; }
+    .chat-bubble.own { flex-direction: row-reverse; }
+    .chat-bubble .av { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .chat-bubble .b { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 13px; line-height: 1.5; }
+    .chat-bubble .b.in { background: var(--surface); color: var(--text); border-bottom-left-radius: 4px; }
+    .chat-bubble .b.out { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; border-bottom-right-radius: 4px; }
+    .chat-bubble .b .tm { font-size: 10px; opacity: .6; display: block; margin-top: 4px; }
+    .chat-bubble .b .paid-lock { display: flex; align-items: center; gap: 6px; margin-top: 6px; padding: 6px 10px; background: rgba(0,0,0,.2); border-radius: 8px; font-size: 12px; cursor: pointer; }
+
+    .publish-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: var(--surface); border-radius: 12px; border: 0.5px solid var(--border); margin-top: 12px; }
+    .publish-bar input { flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px; outline: none; }
+    .publish-bar input::placeholder { color: var(--dark); }
+    .publish-bar .actions { display: flex; gap: 10px; color: var(--gray); font-size: 16px; cursor: pointer; }
+
+    @media (max-width:640px) { .dg { grid-template-columns: 1fr 1fr; } .cg { grid-template-columns: repeat(3, 1fr); } .tc { min-width: 160px; } }
+  </style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="logo">GoGoFans <span>beta</span></div>
+  <div class="hdr-actions">
+    <button class="hdr-btn"><i class="fas fa-search"></i></button>
+    <button class="hdr-btn"><i class="fas fa-comment-dots"></i><span class="badge">3</span></button>
+    <button class="hdr-btn"><i class="fas fa-bell"></i><span class="badge">5</span></button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Mode Switch -->
+  <div style="margin-top:12px;">
+    <div class="mode-switch" id="modeSwitch">
+      <div class="m-btn active" data-mode="fan"><i class="fas fa-user"></i> 粉丝端</div>
+      <div class="m-btn" data-mode="creator"><i class="fas fa-palette"></i> 创作者端</div>
+    </div>
+  </div>
+
+  <!-- Fan Nav -->
+  <div class="pages-nav" id="fanNav">
+    <div class="p-btn active" data-page="fan-discover"><i class="fas fa-compass"></i> 发现</div>
+    <div class="p-btn" data-page="fan-creator"><i class="fas fa-user-astronaut"></i> 创作者主页</div>
+    <div class="p-btn" data-page="fan-content"><i class="fas fa-image"></i> 内容详情</div>
+    <div class="p-btn" data-page="fan-messages"><i class="fas fa-envelope"></i> 消息</div>
+    <div class="p-btn" data-page="fan-subscriptions"><i class="fas fa-crown"></i> 订阅</div>
+    <div class="p-btn" data-page="fan-profile"><i class="fas fa-gear"></i> 个人中心</div>
+  </div>
+  <!-- Creator Nav -->
+  <div class="pages-nav" id="creNav" style="display:none;">
+    <div class="p-btn active" data-page="cre-dashboard"><i class="fas fa-chart-simple"></i> 看板</div>
+    <div class="p-btn" data-page="cre-content"><i class="fas fa-pen-to-square"></i> 内容</div>
+    <div class="p-btn" data-page="cre-fans"><i class="fas fa-users"></i> 粉丝</div>
+    <div class="p-btn" data-page="cre-earnings"><i class="fas fa-coins"></i> 收益</div>
+    <div class="p-btn" data-page="cre-profile"><i class="fas fa-paintbrush"></i> 主页装修</div>
+  </div>
+
+  <!-- ============ FAN PAGE: DISCOVER ============ -->
+  <div class="page-s active" id="page-fan-discover">
+    <div class="sec-title"><i class="fas fa-fire" style="color:var(--pink);"></i> 热门创作者 <span class="more">查看全部 <i class="fas fa-arrow-right"></i></span></div>
+    <div class="h-scroll">
+      <div class="cc"><img class="av" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face"><div class="nm">小野寺凛 🌸</div><div class="fl">12.3万 粉丝</div><div class="pr">$9.99/月</div><button class="btn btn-p btn-sm" style="margin-top:6px;">订阅</button></div>
+      <div class="cc"><img class="av" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face"><div class="nm">Yuki Art 🎨</div><div class="fl">8.7万 粉丝</div><div class="pr">$14.99/月</div><button class="btn btn-p btn-sm" style="margin-top:6px;">订阅</button></div>
+      <div class="cc"><img class="av" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=face"><div class="nm">Aria Cos 💄</div><div class="fl">15.6万 粉丝</div><div class="pr">$6.99/月</div><button class="btn btn-p btn-sm" style="margin-top:6px;">订阅</button></div>
+      <div class="cc"><img class="av" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"><div class="nm">Marcus 📸</div><div class="fl">5.2万 粉丝</div><div class="pr">$19.99/月</div><button class="btn btn-o btn-sm" style="margin-top:6px;">免费关注</button></div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="sec-title"><i class="fas fa-tags"></i> 分类探索</div>
+    <div class="flex gap-8" style="flex-wrap:wrap; margin-bottom:16px;">
+      <span class="tag" style="background:linear-gradient(135deg,rgba(255,107,157,0.2),rgba(196,75,255,0.2));color:#fff;font-size:13px;padding:6px 14px;">Coser</span>
+      <span class="tag" style="font-size:13px;padding:6px 14px;">模特</span>
+      <span class="tag" style="font-size:13px;padding:6px 14px;">艺术家</span>
+      <span class="tag" style="font-size:13px;padding:6px 14px;">健身</span>
+      <span class="tag" style="font-size:13px;padding:6px 14px;">ASMR</span>
+      <span class="tag" style="font-size:13px;padding:6px 14px;">舞蹈</span>
+    </div>
+
+    <div class="sec-title"><i class="fas fa-star" style="color:var(--accent);"></i> 为你推荐 <span class="more">更多 <i class="fas fa-arrow-right"></i></span></div>
+
+    <div class="fc">
+      <div class="fc-hd">
+        <img class="av" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face">
+        <div class="info"><div class="nm">小野寺凛 🌸 <i class="fas fa-check-circle" style="color:#3897F0;font-size:11px;"></i></div><div class="tm">2 小时前</div></div>
+        <button class="btn btn-p btn-sm">订阅 $9.99</button>
+      </div>
+      <div class="fc-md">
+        <img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=800&h=1000&fit=crop">
+        <div class="lock"><div class="lk-icon"><i class="fas fa-lock"></i></div><div class="lk-pr">$9.99</div><div class="lk-d">订阅后解锁本内容及全部历史帖子</div><button class="btn btn-p btn-lg">立即订阅</button></div>
+      </div>
+      <div class="fc-acts">
+        <span class="act"><i class="far fa-heart"></i> <span>12.3K</span></span>
+        <span class="act"><i class="far fa-comment"></i> <span>456</span></span>
+        <span class="act"><i class="fas fa-share"></i></span>
+        <span class="act" style="margin-left:auto;"><i class="far fa-bookmark"></i></span>
+      </div>
+      <div class="fc-cap"><strong>小野寺凛 🌸</strong> 新作！今天的主题是「暗夜玫瑰」🌹✨ 订阅可见完整版，爱你们！</div>
+    </div>
+
+    <div class="fc">
+      <div class="fc-hd">
+        <img class="av" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face">
+        <div class="info"><div class="nm">Yuki Art 🎨 <i class="fas fa-check-circle" style="color:#3897F0;font-size:11px;"></i></div><div class="tm">5 小时前</div></div>
+        <button class="btn btn-o btn-sm">免费关注</button>
+      </div>
+      <div class="fc-md"><img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800&h=1000&fit=crop"></div>
+      <div class="fc-acts">
+        <span class="act liked"><i class="fas fa-heart"></i> <span>8.9K</span></span>
+        <span class="act"><i class="far fa-comment"></i> <span>234</span></span>
+        <span class="act"><i class="fas fa-share"></i></span>
+        <span class="act" style="margin-left:auto;"><i class="far fa-bookmark"></i></span>
+      </div>
+      <div class="fc-cap"><strong>Yuki Art 🎨</strong> 新插画完成：「月光下的舞者」🩰✨ 喜欢的话请订阅支持！<br><span style="color:var(--pink);"><i class="fas fa-lightbulb"></i> 订阅 $14.99/月 解锁全部作品</span></div>
+    </div>
+  </div>
+
+  <!-- ============ FAN PAGE: CREATOR PROFILE ============ -->
+  <div class="page-s" id="page-fan-creator">
+    <div class="pf-hd">
+      <div class="pf-cover" style="background:linear-gradient(135deg,#2d1b69,#1a1a2e); display:flex; align-items:center; justify-content:center; font-size:40px; color:rgba(255,255,255,.15);">🌸</div>
+      <div class="pf-info">
+        <div class="pf-av"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face"></div>
+        <div class="pf-txt">
+          <div class="nm">小野寺凛 🌸 <i class="fas fa-check-circle" style="color:#3897F0;font-size:14px;"></i></div>
+          <div class="hd">@rin_onodera</div>
+          <div class="bio">✨ Coser / 模特 / 生活分享<br>📸 每周更新3-4次 ｜ 私信开放<br>💕 订阅解锁全部内容 + 独家福利</div>
+          <div class="pf-stats">
+            <div class="st"><div class="n">12.3万</div><div class="l">粉丝</div></div>
+            <div class="st"><div class="n">856</div><div class="l">帖子</div></div>
+            <div class="st"><div class="n">98.6%</div><div class="l">互动率</div></div>
+          </div>
+          <div class="pf-acts">
+            <button class="btn btn-p">订阅 $9.99/月</button>
+            <button class="btn btn-o"><i class="far fa-heart"></i> 关注</button>
+            <button class="btn btn-g"><i class="far fa-envelope"></i> 私信</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscription Tiers -->
+    <div class="sec-title"><i class="fas fa-crown" style="color:var(--accent);"></i> 订阅方案</div>
+    <div class="tiers">
+      <div class="tc pop">
+        <div class="pop-b">🔥 最受欢迎</div>
+        <div class="tn">💎 白银</div>
+        <div class="tp">$9.99 <span>/月</span></div>
+        <ul class="tf">
+          <li>解锁全部付费帖子</li>
+          <li>高清图片下载</li>
+          <li>每月2次私信问答</li>
+        </ul>
+        <button class="btn btn-p" style="width:100%; margin-top:12px;">立即订阅</button>
+      </div>
+      <div class="tc">
+        <div class="tn">🌟 黄金</div>
+        <div class="tp">$19.99 <span>/月</span></div>
+        <ul class="tf">
+          <li>白银全部权益</li>
+          <li>独家视频内容</li>
+          <li>每月8次私信互动</li>
+          <li>生日惊喜福利</li>
+        </ul>
+        <button class="btn btn-p" style="width:100%; margin-top:12px;">立即订阅</button>
+      </div>
+      <div class="tc">
+        <div class="tn">👑 白金</div>
+        <div class="tp">$49.99 <span>/月</span></div>
+        <ul class="tf">
+          <li>黄金全部权益</li>
+          <li>1对1视频通话(30min)</li>
+          <li>无限私信</li>
+          <li>自订内容定制</li>
+          <li>优先回复</li>
+        </ul>
+        <button class="btn btn-p" style="width:100%; margin-top:12px;">立即订阅</button>
+      </div>
+    </div>
+
+    <!-- Content Grid Preview -->
+    <div class="sec-title"><i class="fas fa-images"></i> 作品合集 <span class="more">全部 <i class="fas fa-arrow-right"></i></span></div>
+    <div class="cg">
+      <div class="ct"><img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-lock"></i> 付费</div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-video"></i> 视频</div><div class="lk-b">$9.99</div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-lock"></i> 付费</div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-image"></i> 免费</div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-music"></i> 音频</div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1557288044-1a4ee5b0a0a0?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-lock"></i> 付费</div></div>
+    </div>
+
+    <!-- Review Section -->
+    <div class="sec-title"><i class="fas fa-star" style="color:var(--accent);"></i> 粉丝评价 <span class="more">全部 <i class="fas fa-arrow-right"></i></span></div>
+    <div class="card" style="padding:16px;">
+      <div class="cmt"><img class="av" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=face"><div class="b"><div class="nm">CosLover_88</div><div class="tx">凛酱的订阅是我最值的投资！每周都有新内容，质量超好 💕</div><div class="tm">已订阅 6个月</div></div></div>
+      <div class="cmt"><img class="av" src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=100&h=100&fit=crop&crop=face"><div class="b"><div class="nm">PhotoFan_JP</div><div class="tx">构图和光影都很有艺术感，不是那种廉价的软色情，真的推荐订阅</div><div class="tm">已订阅 3个月</div></div></div>
+    </div>
+  </div>
+
+  <!-- ============ FAN PAGE: CONTENT DETAIL ============ -->
+  <div class="page-s" id="page-fan-content">
+    <div class="fc">
+      <div class="fc-hd">
+        <img class="av" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face">
+        <div class="info"><div class="nm">小野寺凛 🌸 <i class="fas fa-check-circle" style="color:#3897F0;font-size:11px;"></i></div><div class="tm">2026-05-14 22:30</div></div>
+        <button class="btn btn-o btn-sm"><i class="fas fa-ellipsis-h"></i></button>
+      </div>
+      <div class="fc-md">
+        <img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=800&h=1200&fit=crop">
+      </div>
+      <div class="fc-acts">
+        <span class="act liked"><i class="fas fa-heart"></i> <span>12.3K</span></span>
+        <span class="act"><i class="far fa-comment"></i> <span>456</span></span>
+        <span class="act"><i class="fas fa-exclamation-triangle" style="color:var(--accent);" title="举报"></i></span>
+        <span class="act" style="margin-left:auto;"><i class="far fa-bookmark"></i> 收藏</span>
+      </div>
+      <div class="fc-cap"><strong>小野寺凛 🌸</strong> 新作！今天的主题是「暗夜玫瑰」🌹✨<br><br>这组照片在花园取景，用了玫瑰作为主要元素，希望大家喜欢！💕<br><br><span style="color:var(--gray);font-size:12px;">🔞 18+ 内容 · 请在合法范围内观看</span></div>
+    </div>
+
+    <!-- Comments -->
+    <div class="sec-title"><i class="far fa-comment"></i> 评论 (456)</div>
+    <div class="card" style="padding:16px;">
+      <div class="cmt"><img class="av" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=face"><div class="b"><div class="nm">Fan_Alice <span style="color:var(--pink);font-size:10px;">订阅者</span></div><div class="tx">这也太好看了吧！凛酱每次都能带来惊喜 😍</div><div class="tm">2小时前 · <span style="color:var(--pink);cursor:pointer;">❤️ 124</span></div></div></div>
+      <div class="cmt"><img class="av" src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=100&h=100&fit=crop&crop=face"><div class="b"><div class="nm">CosMaster_R</div><div class="tx">玫瑰元素和暗黑系的搭配绝了！求问拍摄设备 📷</div><div class="tm">1小时前 · <span style="color:var(--pink);cursor:pointer;">❤️ 56</span></div></div></div>
+      <div class="cmt"><img class="av" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=face"><div class="b"><div class="nm">Sub_Bot <span style="color:var(--pink);font-size:10px;">订阅者</span></div><div class="tx">这个月的照片都质量超高！期待下一期 📸</div><div class="tm">30分钟前 · <span style="color:var(--pink);cursor:pointer;">❤️ 23</span></div></div></div>
+    </div>
+    <div class="publish-bar">
+      <input type="text" placeholder="写下你的评论..." maxlength="200">
+      <div class="actions"><i class="far fa-smile"></i><i class="fas fa-image"></i><button class="btn btn-p btn-sm" style="padding:4px 14px;">发送</button></div>
+    </div>
+  </div>
+
+  <!-- ============ FAN PAGE: MESSAGES ============ -->
+  <div class="page-s" id="page-fan-messages">
+    <div class="sec-title"><i class="fas fa-comment-dots" style="color:var(--pink);"></i> 消息</div>
+    <div class="tabs">
+      <div class="tab active">私信</div>
+      <div class="tab">付费消息</div>
+      <div class="tab">系统通知</div>
+    </div>
+
+    <div class="msg-item">
+      <span class="dot"></span>
+      <img class="av" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face">
+      <div class="ct">
+        <div class="nm">小野寺凛 🌸 <span class="paid">付费</span></div>
+        <div class="pv">🔒 点击解锁付费消息 · $2.99</div>
+      </div>
+      <div class="tm">刚刚</div>
+    </div>
+    <div class="msg-item">
+      <span class="dot"></span>
+      <img class="av" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face">
+      <div class="ct">
+        <div class="nm">Yuki Art 🎨</div>
+        <div class="pv">谢谢你的订阅支持！新作即将发布 🎉</div>
+      </div>
+      <div class="tm">2小时前</div>
+    </div>
+    <div class="msg-item">
+      <img class="av" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=face">
+      <div class="ct">
+        <div class="nm">Aria Cos 💄</div>
+        <div class="pv">今晚有直播哦，不要错过！🎥</div>
+      </div>
+      <div class="tm">昨天</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Chat Preview -->
+    <div class="sec-title" style="font-size:15px;"><i class="fas fa-lock" style="color:var(--accent);"></i> 与小野寺凛的私密聊天</div>
+    <div style="background:var(--surface); border-radius:14px; padding:16px; border:0.5px solid var(--border);">
+      <div class="chat-bubble"><img class="av" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"><div class="b in">凛酱你昨天的新作品太美了！！😍<div class="tm">14:23</div></div></div>
+      <div class="chat-bubble own"><div class="b out">谢谢你！订阅者的支持是我最大的动力 💕<div class="tm">14:25</div></div></div>
+      <div class="chat-bubble own"><div class="b out">我可以请求定制主题吗？<div class="tm">14:26</div></div></div>
+      <div class="chat-bubble"><img class="av" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"><div class="b in">当然可以！白金订阅者的定制服务已开放哦 👑<div class="tm">14:28</div></div></div>
+      <div class="chat-bubble"><img class="av" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"><div class="b in">这里有一个专属内容给你 🔒<div class="tm">14:30</div>
+        <div class="paid-lock"><i class="fas fa-lock"></i> 付费解锁 · $4.99 <span style="margin-left:auto;background:var(--pink);padding:2px 8px;border-radius:4px;font-size:11px;">购买</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ============ FAN PAGE: SUBSCRIPTIONS ============ -->
+  <div class="page-s" id="page-fan-subscriptions">
+    <div class="sec-title"><i class="fas fa-crown" style="color:var(--accent);"></i> 我的订阅</div>
+    <div class="card" style="padding:16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:12px;">
+        <div class="flex items-center gap-12">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">
+          <div><div style="font-weight:700;">小野寺凛 🌸</div><div style="font-size:12px;color:var(--gray);">白银订阅 · $9.99/月</div></div>
+        </div>
+        <span class="tag" style="background:var(--green);color:#fff;">已订阅</span>
+      </div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">下次续费: 2026-06-15 · 自动续费已开启 <i class="fas fa-check-circle" style="color:var(--green);"></i></div>
+      <div class="flex gap-8">
+        <button class="btn btn-o btn-sm"><i class="fas fa-cog"></i> 管理订阅</button>
+        <button class="btn btn-g btn-sm"><i class="fas fa-gift"></i> 赠送订阅</button>
+      </div>
+    </div>
+    <div class="card" style="padding:16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:12px;">
+        <div class="flex items-center gap-12">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">
+          <div><div style="font-weight:700;">Yuki Art 🎨</div><div style="font-size:12px;color:var(--gray);">黄金订阅 · $19.99/月</div></div>
+        </div>
+        <span class="tag" style="background:var(--surfaceL);">即将到期</span>
+      </div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">到期时间: 2026-05-20 · 剩余5天</div>
+      <button class="btn btn-p btn-sm">立即续费</button>
+    </div>
+    <div class="card" style="padding:16px;">
+      <div class="flex items-center gap-12">
+        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=face" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">
+        <div><div style="font-weight:700;">Aria Cos 💄</div><div style="font-size:12px;color:var(--gray);">免费关注</div></div>
+      </div>
+      <button class="btn btn-p btn-sm mt-8">订阅 $6.99/月</button>
+    </div>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-clock"></i> 订阅历史</div>
+    <div class="si"><div class="l"><div class="tx">已过期的订阅</div></div><div class="r">3 个</div></div>
+    <div class="si"><div class="l"><div class="tx">总消费金额</div></div><div class="r">$89.91</div></div>
+  </div>
+
+  <!-- ============ FAN PAGE: PROFILE ============ -->
+  <div class="page-s" id="page-fan-profile">
+    <div class="wallet">
+      <div class="lbl"><i class="fas fa-wallet"></i> 我的钱包</div>
+      <div class="bal">$128.50</div>
+      <div class="wa">
+        <button class="btn"><i class="fas fa-plus"></i> 充值</button>
+        <button class="btn"><i class="fas fa-history"></i> 消费记录</button>
+        <button class="btn"><i class="fas fa-credit-card"></i> 支付方式</button>
+      </div>
+    </div>
+
+    <div class="sec-title"><i class="fas fa-user"></i> 个人资料</div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-user-circle"></i></div><div class="tx">头像与昵称</div></div><div class="r"><i class="fas fa-chevron-right"></i></div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-envelope"></i></div><div class="tx">邮箱</div></div><div class="r">fan***@email.com</div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-phone"></i></div><div class="tx">手机</div></div><div class="r">+86 138****5678</div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-id-card"></i></div><div class="tx">年龄验证</div></div><div class="r" style="color:var(--green);">已验证 18+ <i class="fas fa-check-circle"></i></div></div>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-shopping-bag"></i> 购买记录</div>
+    <div class="card" style="padding:12px 16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:600;">小野寺凛 · 白银订阅</div>
+        <div style="font-size:13px;color:var(--pink);font-weight:700;">$9.99</div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);">2026-05-15 · 自动续费 · <span style="color:var(--green);">已付款</span></div>
+    </div>
+    <div class="card" style="padding:12px 16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:600;">Yuki Art · 付费私信解锁</div>
+        <div style="font-size:13px;color:var(--pink);font-weight:700;">$4.99</div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);">2026-05-14 · PPV私信 · <span style="color:var(--green);">已付款</span></div>
+    </div>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-bookmark"></i> 收藏夹</div>
+    <div class="cg" style="grid-template-columns:repeat(4,1fr);">
+      <div class="ct" style="aspect-ratio:1;"><img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=200&h=200&fit=crop"></div>
+      <div class="ct" style="aspect-ratio:1;"><img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=200&h=200&fit=crop"></div>
+      <div class="ct" style="aspect-ratio:1;"><img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=200&h=200&fit=crop"></div>
+      <div class="ct" style="aspect-ratio:1;"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop"></div>
+    </div>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-cog"></i> 设置</div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-bell"></i></div><div class="tx">通知设置</div></div><div class="r"><i class="fas fa-chevron-right"></i></div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-shield-alt"></i></div><div class="tx">隐私与安全</div></div><div class="r"><i class="fas fa-chevron-right"></i></div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-language"></i></div><div class="tx">语言</div></div><div class="r">简体中文</div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-moon"></i></div><div class="tx">深色模式</div></div><div class="r"><i class="fas fa-check-circle" style="color:var(--green);"></i></div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-question-circle"></i></div><div class="tx">帮助与反馈</div></div><div class="r"><i class="fas fa-chevron-right"></i></div></div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- ==================== CREATOR SIDE ========================== -->
+  <!-- ============================================================ -->
+
+  <!-- ============ CREATOR DASHBOARD ============ -->
+  <div class="page-s" id="page-cre-dashboard">
+    <div class="sec-title"><i class="fas fa-chart-line" style="color:var(--green);"></i> 数据看板</div>
+    <div class="dg">
+      <div class="dc"><div class="lbl">本月收入</div><div class="val">$2,847</div><div class="chg up"><i class="fas fa-arrow-up"></i> +23.5%</div></div>
+      <div class="dc"><div class="lbl">总粉丝</div><div class="val">12,384</div><div class="chg up"><i class="fas fa-arrow-up"></i> +892 本周</div></div>
+      <div class="dc"><div class="lbl">订阅转化</div><div class="val">18.6%</div><div class="chg up"><i class="fas fa-arrow-up"></i> +2.1%</div></div>
+      <div class="dc"><div class="lbl">内容互动</div><div class="val">98.6%</div><div class="chg down"><i class="fas fa-arrow-down"></i> -0.3%</div></div>
+    </div>
+
+    <div class="sec-title"><i class="fas fa-chart-bar"></i> 近期表现</div>
+    <div class="card" style="padding:16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:600;">「暗夜玫瑰」📸</div>
+        <div><span style="color:var(--green);font-size:12px;">❤️ 12.3K</span> <span style="color:var(--gray);font-size:12px;margin-left:8px;">💬 456</span></div>
+      </div>
+      <div style="height:4px;background:var(--surfaceL);border-radius:2px;"><div style="width:78%;height:100%;background:linear-gradient(135deg,var(--pink),var(--purple));border-radius:2px;"></div></div>
+      <div style="font-size:11px;color:var(--gray);margin-top:6px;">表现优于 85% 的内容</div>
+    </div>
+    <div class="card" style="padding:16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:600;">「月光下的舞者」🎨</div>
+        <div><span style="color:var(--green);font-size:12px;">❤️ 8.9K</span> <span style="color:var(--gray);font-size:12px;margin-left:8px;">💬 234</span></div>
+      </div>
+      <div style="height:4px;background:var(--surfaceL);border-radius:2px;"><div style="width:62%;height:100%;background:linear-gradient(135deg,var(--pink),var(--purple));border-radius:2px;"></div></div>
+      <div style="font-size:11px;color:var(--gray);margin-top:6px;">表现优于 68% 的内容</div>
+    </div>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-bolt" style="color:var(--accent);"></i> 快速操作</div>
+    <div class="flex gap-8" style="flex-wrap:wrap;">
+      <button class="btn btn-p"><i class="fas fa-plus"></i> 发布内容</button>
+      <button class="btn btn-o"><i class="fas fa-video"></i> 开始直播</button>
+      <button class="btn btn-o"><i class="fas fa-gift"></i> 创建推广</button>
+      <button class="btn btn-o"><i class="fas fa-file-export"></i> 导出数据</button>
+    </div>
+  </div>
+
+  <!-- ============ CREATOR CONTENT ============ -->
+  <div class="page-s" id="page-cre-content">
+    <div class="flex items-center justify-between" style="margin-bottom:16px;">
+      <div class="sec-title" style="margin:0;"><i class="fas fa-pen-to-square"></i> 内容管理</div>
+      <button class="btn btn-p"><i class="fas fa-plus"></i> 新建</button>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active">已发布</div>
+      <div class="tab">草稿箱 (3)</div>
+      <div class="tab">直播预告</div>
+    </div>
+
+    <div class="cg">
+      <div class="ct"><img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-image"></i> 图文</div><div class="lk-b">订阅</div><div class="ov"><button class="btn btn-g btn-sm">编辑</button></div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-video"></i> 视频</div><div class="lk-b">$4.99</div><div class="ov"><button class="btn btn-g btn-sm">编辑</button></div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-image"></i> 图文</div><div class="lk-b">订阅</div><div class="ov"><button class="btn btn-g btn-sm">编辑</button></div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-music"></i> 音频</div><div class="ov"><button class="btn btn-g btn-sm">编辑</button></div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-image"></i> 图文</div><div class="lk-b">合集</div><div class="ov"><button class="btn btn-g btn-sm">编辑</button></div></div>
+      <div class="ct"><img src="https://images.unsplash.com/photo-1557288044-1a4ee5b0a0a0?w=400&h=500&fit=crop"><div class="tp-b"><i class="fas fa-image"></i> 图文</div><div class="lk-b">免费</div><div class="ov"><button class="btn btn-g btn-sm">编辑</button></div></div>
+    </div>
+
+    <!-- Publish Panel -->
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-upload"></i> 发布新内容</div>
+    <div class="card" style="padding:16px;">
+      <div style="display:flex; gap:10px; margin-bottom:12px;">
+        <button class="btn btn-p btn-sm"><i class="fas fa-image"></i> 图片</button>
+        <button class="btn btn-o btn-sm"><i class="fas fa-video"></i> 视频</button>
+        <button class="btn btn-o btn-sm"><i class="fas fa-music"></i> 音频</button>
+        <button class="btn btn-o btn-sm"><i class="fas fa-clock"></i> 直播预告</button>
+      </div>
+      <div style="background:var(--surfaceL); border-radius:8px; padding:20px; text-align:center; color:var(--gray); font-size:13px; margin-bottom:12px;">
+        <i class="fas fa-cloud-upload-alt" style="font-size:24px;display:block;margin-bottom:4px;"></i> 点击或拖拽上传媒体文件
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">付费设置</div>
+        <div class="flex gap-8" style="flex-wrap:wrap;">
+          <span class="tag" style="background:var(--pink);color:#fff;">月度订阅</span>
+          <span class="tag" style="background:var(--surfaceL);">单帖付费</span>
+          <span class="tag" style="background:var(--surfaceL);">合集付费</span>
+          <span class="tag" style="background:var(--surfaceL);">免费预览</span>
+        </div>
+      </div>
+      <textarea placeholder="写下帖子文案..." style="width:100%;min-height:60px;background:var(--surfaceL);border:none;border-radius:8px;color:var(--text);font-size:13px;padding:10px;resize:vertical;outline:none;"></textarea>
+      <div class="flex justify-between items-center mt-8">
+        <div class="flex gap-8"><span class="tag"><i class="far fa-smile"></i></span><span class="tag"><i class="fas fa-hashtag"></i> 标签</span></div>
+        <button class="btn btn-p btn-sm"><i class="fas fa-paper-plane"></i> 发布</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CREATOR FANS ============ -->
+  <div class="page-s" id="page-cre-fans">
+    <div class="sec-title"><i class="fas fa-users"></i> 粉丝管理</div>
+    <div style="display:flex; gap:16px; margin-bottom:16px;">
+      <div class="dc" style="flex:1;"><div class="lbl">总粉丝</div><div class="val">12,384</div></div>
+      <div class="dc" style="flex:1;"><div class="lbl">付费订阅</div><div class="val">2,305</div></div>
+      <div class="dc" style="flex:1;"><div class="lbl">互动率</div><div class="val">98.6%</div></div>
+    </div>
+
+    <div style="background:var(--surface); border-radius:14px; padding:16px; border:0.5px solid var(--border);">
+      <div class="flex items-center justify-between" style="margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:600;">粉丝列表</div>
+        <div><input type="text" placeholder="搜索粉丝..." style="background:var(--surfaceL);border:none;border-radius:999px;padding:6px 12px;font-size:12px;color:var(--text);outline:none;"></div>
+      </div>
+      <div class="msg-item" style="padding:8px 0;">
+        <img class="av" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=face" style="width:36px;height:36px;">
+        <div class="ct">
+          <div class="nm">CosLover_88 <span class="paid" style="background:var(--green);">白银</span></div>
+          <div class="pv">已订阅 6个月 · 消费 $89.94</div>
+        </div>
+        <button class="btn btn-g btn-sm"><i class="fas fa-envelope"></i></button>
+      </div>
+      <div class="msg-item" style="padding:8px 0;">
+        <img class="av" src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=100&h=100&fit=crop&crop=face" style="width:36px;height:36px;">
+        <div class="ct">
+          <div class="nm">PhotoFan_JP <span class="paid" style="background:var(--pink);">黄金</span></div>
+          <div class="pv">已订阅 3个月 · 消费 $59.97</div>
+        </div>
+        <button class="btn btn-g btn-sm"><i class="fas fa-envelope"></i></button>
+      </div>
+      <div class="msg-item" style="padding:8px 0;">
+        <img class="av" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=face" style="width:36px;height:36px;">
+        <div class="ct">
+          <div class="nm">Sub_Bot <span class="paid" style="background:var(--accent);color:#000;">白金</span></div>
+          <div class="pv">已订阅 1个月 · 消费 $49.99</div>
+        </div>
+        <button class="btn btn-g btn-sm"><i class="fas fa-envelope"></i></button>
+      </div>
+    </div>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-chart-pie"></i> 互动数据</div>
+    <div class="dg">
+      <div class="dc"><div class="lbl">平均互动率</div><div class="val">98.6%</div></div>
+      <div class="dc"><div class="lbl">私信回复率</div><div class="val">94.2%</div></div>
+      <div class="dc"><div class="lbl">私信转化</div><div class="val">12.8%</div></div>
+      <div class="dc"><div class="lbl">退款率</div><div class="val">0.3%</div></div>
+    </div>
+
+    <!-- Mass DM -->
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-bullhorn"></i> 群发消息</div>
+    <div class="card" style="padding:16px;">
+      <textarea placeholder="输入群发消息内容... 可用于付费通知、直播提醒等" style="width:100%;min-height:50px;background:var(--surfaceL);border:none;border-radius:8px;color:var(--text);font-size:13px;padding:10px;outline:none;"></textarea>
+      <div class="flex justify-between items-center mt-8">
+        <div style="font-size:12px;color:var(--gray);"><i class="fas fa-users"></i> 发送给 2,305 位付费粉丝</div>
+        <button class="btn btn-p btn-sm"><i class="fas fa-paper-plane"></i> 群发</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CREATOR EARNINGS ============ -->
+  <div class="page-s" id="page-cre-earnings">
+    <div class="sec-title"><i class="fas fa-coins" style="color:var(--accent);"></i> 收益中心</div>
+    <div class="wallet">
+      <div class="lbl">可提现余额</div>
+      <div class="bal">$2,847.50</div>
+      <div class="wa">
+        <button class="btn"><i class="fas fa-hand-holding-usd"></i> 提现</button>
+        <button class="btn"><i class="fas fa-file-invoice"></i> 账单</button>
+      </div>
+    </div>
+
+    <div class="dg">
+      <div class="dc"><div class="lbl">订阅收入</div><div class="val">$2,184</div><div class="chg up"><i class="fas fa-arrow-up"></i> +18.2%</div></div>
+      <div class="dc"><div class="lbl">PPV单帖</div><div class="val">$423</div><div class="chg up"><i class="fas fa-arrow-up"></i> +32.1%</div></div>
+      <div class="dc"><div class="lbl">私信收入</div><div class="val">$186</div><div class="chg up"><i class="fas fa-arrow-up"></i> +8.7%</div></div>
+      <div class="dc"><div class="lbl">小费/打赏</div><div class="val">$54.50</div><div class="chg down"><i class="fas fa-arrow-down"></i> -2.3%</div></div>
+    </div>
+
+    <div class="sec-title"><i class="fas fa-receipt"></i> 收入明细</div>
+    <div class="card" style="padding:12px 16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:6px;">
+        <div style="font-size:13px;"><span style="font-weight:600;">小野寺凛·白银</span> 续费订阅</div>
+        <div style="font-size:13px;color:var(--green);font-weight:700;">+$9.99</div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);">2026-05-15 08:30 · 自动续费 · 平台抽成 10%</div>
+    </div>
+    <div class="card" style="padding:12px 16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:6px;">
+        <div style="font-size:13px;"><span style="font-weight:600;">粉丝_Alice</span> 私信解锁照片</div>
+        <div style="font-size:13px;color:var(--green);font-weight:700;">+$4.99</div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);">2026-05-14 22:15 · PPV私信 · 平台抽成 10%</div>
+    </div>
+    <div class="card" style="padding:12px 16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:6px;">
+        <div style="font-size:13px;"><span style="font-weight:600;">CosMaster_R</span> 打赏</div>
+        <div style="font-size:13px;color:var(--green);font-weight:700;">+$5.00</div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);">2026-05-14 16:00 · 小费 · 平台抽成 10%</div>
+    </div>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-percent"></i> 分成比例</div>
+    <div class="card" style="padding:16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:8px;">
+        <div style="font-size:13px;">平台抽成</div>
+        <div style="font-size:13px;font-weight:700;">10%</div>
+      </div>
+      <div style="height:4px;background:var(--surfaceL);border-radius:2px;"><div style="width:10%;height:100%;background:var(--pink);border-radius:2px;"></div></div>
+      <div style="font-size:11px;color:var(--gray);margin-top:6px;">当前抽成比例 10% · 月流水超 $5,000 可降至 8%</div>
+    </div>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-download"></i> 提现设置</div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-university"></i></div><div class="tx">绑定银行账户</div></div><div class="r">***1234 <i class="fas fa-chevron-right"></i></div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fab fa-bitcoin"></i></div><div class="tx">加密货币</div></div><div class="r">未绑定 <i class="fas fa-chevron-right"></i></div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-clock"></i></div><div class="tx">提现周期</div></div><div class="r">T+1 工作日 <i class="fas fa-chevron-right"></i></div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-history"></i></div><div class="tx">提现记录</div></div><div class="r">查看 <i class="fas fa-chevron-right"></i></div></div>
+  </div>
+
+  <!-- ============ CREATOR PROFILE SETTINGS ============ -->
+  <div class="page-s" id="page-cre-profile">
+    <div class="sec-title"><i class="fas fa-paintbrush"></i> 主页装修</div>
+
+    <div class="pf-hd">
+      <div class="pf-cover" style="background:linear-gradient(135deg,#2d1b69,#1a1a2e); display:flex; align-items:center; justify-content:center; font-size:24px; color:rgba(255,255,255,.15);">点击更换封面</div>
+    </div>
+
+    <div class="card" style="padding:16px;">
+      <div class="si"><div class="l"><div class="ic"><i class="fas fa-user-circle" style="font-size:24px;"></i></div><div class="tx">更换头像</div></div><div class="r"><button class="btn btn-g btn-sm">上传</button></div></div>
+      <div class="si"><div class="l"><div class="ic"><i class="fas fa-pen"></i></div><div class="tx">创作名称</div></div><div class="r">小野寺凛 🌸</div></div>
+      <div class="si"><div class="l"><div class="ic"><i class="fas fa-at"></i></div><div class="tx">个人简介</div></div><div class="r"><button class="btn btn-g btn-sm">编辑</button></div></div>
+      <div class="card" style="background:var(--surfaceL);padding:12px;margin-top:8px;">
+        <div style="font-size:12px;color:var(--gray);margin-bottom:4px;">当前简介</div>
+        <div style="font-size:13px;line-height:1.5;">✨ Coser / 模特 / 生活分享<br>📸 每周更新3-4次 ｜ 私信开放</div>
+      </div>
+    </div>
+
+    <div class="sec-title"><i class="fas fa-crown"></i> 订阅层级设置</div>
+    <div class="card" style="padding:16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;">💎 白银 · $9.99/月</div>
+        <button class="btn btn-g btn-sm"><i class="fas fa-edit"></i></button>
+      </div>
+      <div style="font-size:12px;color:var(--gray);">解锁全部付费帖子 · 高清图片 · 每月2次私信</div>
+    </div>
+    <div class="card" style="padding:16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;">🌟 黄金 · $19.99/月</div>
+        <button class="btn btn-g btn-sm"><i class="fas fa-edit"></i></button>
+      </div>
+      <div style="font-size:12px;color:var(--gray);">白银权益 · 独家视频 · 每月8次私信 · 生日福利</div>
+    </div>
+    <div class="card" style="padding:16px;">
+      <div class="flex items-center justify-between" style="margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;">👑 白金 · $49.99/月</div>
+        <button class="btn btn-g btn-sm"><i class="fas fa-edit"></i></button>
+      </div>
+      <div style="font-size:12px;color:var(--gray);">全部权益 · 1对1视频 · 无限私信 · 内容定制 · 优先回复</div>
+    </div>
+    <button class="btn btn-o" style="width:100%;"><i class="fas fa-plus"></i> 新增订阅层级</button>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-th-list"></i> 服务菜单配置</div>
+    <div class="card" style="padding:16px;">
+      <div class="si"><div class="l"><div class="tx">私信价格</div></div><div class="r">$1.99/条 <button class="btn btn-g btn-sm" style="margin-left:8px;">修改</button></div></div>
+      <div class="si"><div class="l"><div class="tx">图片消息</div></div><div class="r">$2.99/张 <button class="btn btn-g btn-sm" style="margin-left:8px;">修改</button></div></div>
+      <div class="si"><div class="l"><div class="tx">语音消息</div></div><div class="r">$1.49/条 <button class="btn btn-g btn-sm" style="margin-left:8px;">修改</button></div></div>
+      <div class="si"><div class="l"><div class="tx">视频通话(30min)</div></div><div class="r">$29.99 <button class="btn btn-g btn-sm" style="margin-left:8px;">修改</button></div></div>
+    </div>
+
+    <div class="sec-title" style="margin-top:24px;"><i class="fas fa-palette"></i> 展示设置</div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-eye"></i></div><div class="tx">展示免费预览帖子数</div></div><div class="r">3 篇 <i class="fas fa-chevron-right"></i></div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-star"></i></div><div class="tx">精选合集置顶</div></div><div class="r"><button class="btn btn-g btn-sm">配置</button></div></div>
+    <div class="si"><div class="l"><div class="ic"><i class="fas fa-link"></i></div><div class="tx">自定义链接</div></div><div class="r"><button class="btn btn-g btn-sm">添加</button></div></div>
+  </div>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <div class="bn" id="bottomNavFan">
+    <div class="ni active" data-section="fan"><i class="ic fas fa-compass"></i><span class="lb">发现</span></div>
+    <div class="ni" data-section="fan"><i class="ic fas fa-crown"></i><span class="lb">订阅</span></div>
+    <div class="ni" data-section="fan"><i class="ic fas fa-search"></i><span class="lb">搜索</span></div>
+    <div class="ni" data-section="fan"><i class="ic fas fa-comment-dots"><span class="nb">3</span></i><span class="lb">消息</span></div>
+    <div class="ni" data-section="fan"><i class="ic fas fa-user"></i><span class="lb">我的</span></div>
+  </div>
+  <div class="bn" id="bottomNavCre" style="display:none;">
+    <div class="ni active" data-section="cre"><i class="ic fas fa-chart-simple"></i><span class="lb">看板</span></div>
+    <div class="ni" data-section="cre"><i class="ic fas fa-pen-to-square"></i><span class="lb">内容</span></div>
+    <div class="ni" data-section="cre"><i class="ic fas fa-users"></i><span class="lb">粉丝</span></div>
+    <div class="ni" data-section="cre"><i class="ic fas fa-coins"></i><span class="lb">收益</span></div>
+    <div class="ni" data-section="cre"><i class="ic fas fa-paintbrush"></i><span class="lb">装修</span></div>
+  </div>
+
+  <script>
+    // Mode Switch
+    const modeBtns = document.querySelectorAll('#modeSwitch .m-btn');
+    const fanNav = document.getElementById('fanNav');
+    const creNav = document.getElementById('creNav');
+    const botFan = document.getElementById('bottomNavFan');
+    const botCre = document.getElementById('bottomNavCre');
+
+    // Store current page per mode
+    let currentFan = 'fan-discover';
+    let currentCre = 'cre-dashboard';
+
+    function switchMode(mode) {
+      modeBtns.forEach(b => b.classList.remove('active'));
+      document.querySelector(`#modeSwitch .m-btn[data-mode="${mode}"]`).classList.add('active');
+
+      if (mode === 'fan') {
+        fanNav.style.display = 'flex';
+        creNav.style.display = 'none';
+        botFan.style.display = 'flex';
+        botCre.style.display = 'none';
+        showPage(currentFan);
+      } else {
+        fanNav.style.display = 'none';
+        creNav.style.display = 'flex';
+        botFan.style.display = 'none';
+        botCre.style.display = 'flex';
+        showPage(currentCre);
+      }
+    }
+
+    modeBtns.forEach(btn => {
+      btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+    });
+
+    // Page Navigation
+    function showPage(pageId) {
+      document.querySelectorAll('.page-s').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+
+      // Update nav buttons
+      document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.querySelector(`.p-btn[data-page="${pageId}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Store current
+      if (pageId.startsWith('fan-')) currentFan = pageId;
+      else if (pageId.startsWith('cre-')) currentCre = pageId;
+    }
+
+    document.querySelectorAll('.p-btn').forEach(btn => {
+      btn.addEventListener('click', () => showPage(btn.dataset.page));
+    });
+
+    // Bottom Nav
+    document.querySelectorAll('.ni').forEach(item => {
+      item.addEventListener('click', () => {
+        const parent = item.closest('.bn');
+        parent.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+
+    // Default: show fan discover
+    showPage('fan-discover');
+  </script>
+
+</body>
+</html>

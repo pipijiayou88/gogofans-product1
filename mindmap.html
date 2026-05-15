@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoGoFans · 产品立项思维导图</title>
+  <style>
+    * { margin: 0; padding: 0; }
+    body { background: #1a1a2e; font-family: system-ui, -apple-system, sans-serif; }
+    #mindmap { width: 100vw; height: 100vh; display: block; }
+    .markmap-dark { background: #1a1a2e; color: #e0e0e0; }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css">
+</head>
+<body>
+  <svg id="mindmap"></svg>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+  <script>
+    (() => {
+      const data = {
+        "content": "GoGoFans · 产品立项方案",
+        "children": [
+          {
+            "content": "一、项目主题与背景",
+            "children": [
+              {
+                "content": "项目名称：GoGoFans"
+              },
+              {
+                "content": "项目定位：合规软色情原创内容变现社区"
+              },
+              {
+                "content": "市场背景",
+                "children": [
+                  { "content": "创作者经济崛起，粉丝为亲密感和独家内容付费意愿强" },
+                  { "content": "OnlyFans和Fansly验证市场但面临政策风险与创作者流失" },
+                  { "content": "软色情赛道存在差异化机会" }
+                ]
+              },
+              {
+                "content": "市场竞品",
+                "children": [
+                  {
+                    "content": "OnlyFans",
+                    "children": [
+                      { "content": "泛内容变现平台，成人内容为主导" },
+                      { "content": "平台抽成20%" },
+                      { "content": "品牌强但政策摇摆" },
+                      { "content": "单一付费墙，弱发现机制" }
+                    ]
+                  },
+                  {
+                    "content": "Fansly",
+                    "children": [
+                      { "content": "成人内容优先，创作者工具丰富" },
+                      { "content": "平台抽成20%（可调）" },
+                      { "content": "多层订阅+FYP推荐算法" },
+                      { "content": "小费最低$1，提现1-2天" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "content": "行业痛点",
+                "children": [
+                  { "content": "内容审核不透明" },
+                  { "content": "支付渠道受限" },
+                  { "content": "成人内容标签带来合规隐患" }
+                ]
+              },
+              {
+                "content": "产品定位",
+                "children": [
+                  { "content": "为创作者与粉丝构建合规、安全、高互动的软色情内容生态" },
+                  { "content": "强调艺术审美与生活方式融合，规避硬色情风险" }
+                ]
+              },
+              {
+                "content": "目标用户",
+                "children": [
+                  { "content": "头部及中腰部原创软色情创作者（Coser、模特、艺术家）" },
+                  { "content": "愿意为独家互动付费的粉丝（18+严格验证）" }
+                ]
+              },
+              {
+                "content": "项目目标",
+                "children": [
+                  { "content": "6个月内上线MVP" },
+                  { "content": "获取种子创作者" },
+                  { "content": "实现正向流水" }
+                ]
+              }
+            ]
+          },
+          {
+            "content": "二、页面整体架构",
+            "children": [
+              {
+                "content": "用户端（粉丝）",
+                "children": [
+                  {
+                    "content": "发现页",
+                    "children": [
+                      { "content": "推荐流（For You / FYP）" },
+                      { "content": "热门创作者榜单" },
+                      { "content": "分类标签浏览" },
+                      { "content": "搜索（创作者、标签）" }
+                    ]
+                  },
+                  {
+                    "content": "创作者主页",
+                    "children": [
+                      { "content": "封面/头像/简介" },
+                      { "content": "多层级订阅方案展示" },
+                      { "content": "内容预览（免费/付费）" },
+                      { "content": "作品合集" }
+                    ]
+                  },
+                  {
+                    "content": "内容详情",
+                    "children": [
+                      { "content": "图片/视频播放器（水印、防录屏）" },
+                      { "content": "点赞/评论/收藏" },
+                      { "content": "付费解锁提示（PPV）" },
+                      { "content": "内容分享" }
+                    ]
+                  },
+                  {
+                    "content": "消息中心",
+                    "children": [
+                      { "content": "付费私信（按条/免费粉丝）" },
+                      { "content": "图片/语音消息" },
+                      { "content": "已购内容提醒" }
+                    ]
+                  },
+                  {
+                    "content": "订阅管理",
+                    "children": [
+                      { "content": "当前订阅列表" },
+                      { "content": "到期时间提醒" },
+                      { "content": "自动续费设置" }
+                    ]
+                  },
+                  {
+                    "content": "个人中心",
+                    "children": [
+                      { "content": "个人资料编辑" },
+                      { "content": "钱包（充值/消费记录）" },
+                      { "content": "购买记录" },
+                      { "content": "收藏夹" },
+                      { "content": "系统设置" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "content": "创作者端（独立Tab/Web）",
+                "children": [
+                  {
+                    "content": "首页数据看板",
+                    "children": [
+                      { "content": "收入概览" },
+                      { "content": "粉丝增长曲线" },
+                      { "content": "内容表现分析" }
+                    ]
+                  },
+                  {
+                    "content": "内容管理",
+                    "children": [
+                      { "content": "发布图文/视频/音频" },
+                      { "content": "设置付费墙（订阅/单次PPV）" },
+                      { "content": "直播预告管理" },
+                      { "content": "草稿箱" }
+                    ]
+                  },
+                  {
+                    "content": "粉丝管理",
+                    "children": [
+                      { "content": "粉丝列表与标签" },
+                      { "content": "互动数据分析" },
+                      { "content": "付费私信管理/群发" }
+                    ]
+                  },
+                  {
+                    "content": "收益中心",
+                    "children": [
+                      { "content": "收入明细" },
+                      { "content": "提现设置" },
+                      { "content": "分成比例查看" }
+                    ]
+                  },
+                  {
+                    "content": "主页装修",
+                    "children": [
+                      { "content": "自定义头像/封面" },
+                      { "content": "简介编辑" },
+                      { "content": "服务菜单配置" },
+                      { "content": "订阅层级设置" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "content": "管理后台",
+                "children": [
+                  {
+                    "content": "内容审核",
+                    "children": [
+                      { "content": "AI初筛（软色情边界识别）" },
+                      { "content": "人工复审" },
+                      { "content": "敏感内容分级处理" }
+                    ]
+                  },
+                  {
+                    "content": "用户管理",
+                    "children": [
+                      { "content": "创作者认证审核" },
+                      { "content": "粉丝实名/年龄验证" },
+                      { "content": "封禁与处罚管理" }
+                    ]
+                  },
+                  {
+                    "content": "财务系统",
+                    "children": [
+                      { "content": "订单管理" },
+                      { "content": "分账结算" },
+                      { "content": "提现处理" }
+                    ]
+                  },
+                  {
+                    "content": "数据运营",
+                    "children": [
+                      { "content": "大盘数据总览" },
+                      { "content": "用户行为分析" },
+                      { "content": "创作者活跃度分析" }
+                    ]
+                  },
+                  {
+                    "content": "系统配置",
+                    "children": [
+                      { "content": "标签库管理" },
+                      { "content": "规则引擎" },
+                      { "content": "支付渠道配置" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "content": "三、核心功能范围",
+            "children": [
+              {
+                "content": "创作者工具",
+                "children": [
+                  { "content": "多媒体内容发布（图片集/短视频/长视频/音频）" },
+                  { "content": "付费墙设置（月度订阅/单帖付费/合集付费/免费预览）" },
+                  { "content": "直播互动（软色情合规范围内：聊天、才艺）" },
+                  { "content": "私信变现（付费消息 + 付费锁定内容）" },
+                  { "content": "小费/打赏（可附加在内容或私信中）" },
+                  { "content": "推广工具（折扣/免费试用链接/推荐计划）" }
+                ]
+              },
+              {
+                "content": "粉丝体验",
+                "children": [
+                  { "content": "订阅解锁全部内容" },
+                  { "content": "单次购买查看特定帖子（PPV）" },
+                  { "content": "点赞/评论/收藏/分享" },
+                  { "content": "私密聊天（文本/图片/语音）" },
+                  { "content": "订阅到期提醒 + 自动续费" },
+                  { "content": "内容水印 + 防截屏/防录屏检测" }
+                ]
+              },
+              {
+                "content": "平台核心",
+                "children": [
+                  {
+                    "content": "用户认证体系",
+                    "children": [
+                      { "content": "手机/邮箱注册登录" },
+                      { "content": "强制年龄验证（18+）" },
+                      { "content": "创作者身份认证" }
+                    ]
+                  },
+                  {
+                    "content": "支付集成",
+                    "children": [
+                      { "content": "信用卡" },
+                      { "content": "加密货币" },
+                      { "content": "本地支付方式" },
+                      { "content": "风险规避策略" }
+                    ]
+                  },
+                  {
+                    "content": "内容安全",
+                    "children": [
+                      { "content": "AI鉴黄模型（定位软色情边界）" },
+                      { "content": "人工审核兜底" },
+                      { "content": "违规分级处理" }
+                    ]
+                  },
+                  {
+                    "content": "推荐算法",
+                    "children": [
+                      { "content": "基于兴趣标签" },
+                      { "content": "创作者热度" },
+                      { "content": "互动率" }
+                    ]
+                  },
+                  {
+                    "content": "通知系统",
+                    "children": [
+                      { "content": "推送通知" },
+                      { "content": "邮件通知" },
+                      { "content": "站内信" }
+                    ]
+                  },
+                  {
+                    "content": "合规与风控",
+                    "children": [
+                      { "content": "反洗钱机制" },
+                      { "content": "数据隐私GDPR合规" },
+                      { "content": "支付风控" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "content": "MVP范围",
+                "children": [
+                  { "content": "注册登录 + 年龄验证" },
+                  { "content": "创作者认证申请" },
+                  { "content": "图文/视频发布 + 付费墙设置" },
+                  { "content": "粉丝订阅与解锁观看" },
+                  { "content": "简单推荐流（标签+热度）" },
+                  { "content": "收益记录与提现" },
+                  { "content": "基础AI+人工审核" }
+                ]
+              }
+            ]
+          },
+          {
+            "content": "四、差异化策略",
+            "children": [
+              { "content": "更低的平台抽成或阶梯费率" },
+              { "content": "内置智能推荐引擎（类FYP）降低对外部引流依赖" },
+              { "content": "多层级订阅 + 免费关注混合模式" },
+              { "content": "私信PPV mid-chat + 直播众筹等促活工具" },
+              { "content": "AI辅助创作者工具（自动标签/内容优化/代运营）" },
+              { "content": "小费低门槛化（$1起打赏）" },
+              { "content": "超快速提现（1个工作日内）" },
+              { "content": "更严格的内容保护和付费墙穿透防御" }
+            ]
+          },
+          {
+            "content": "五、商业模式",
+            "children": [
+              {
+                "content": "收入来源",
+                "children": [
+                  { "content": "平台抽佣（订阅/PPV/打赏/私信/直播）" },
+                  { "content": "广告收入（非成人区域）" },
+                  { "content": "增值服务（数据分析/推广助推/优先支持）" },
+                  { "content": "创作者入驻/认证费（可选）" }
+                ]
+              },
+              {
+                "content": "定价与抽成策略",
+                "children": [
+                  { "content": "默认抽成X%，达业绩门槛降抽成" },
+                  { "content": "粉丝端支付手续费承担方案" }
+                ]
+              },
+              {
+                "content": "创作者激励体系",
+                "children": [
+                  { "content": "新人扶持基金" },
+                  { "content": "内容质量奖励" },
+                  { "content": "推荐流量加权规则" }
+                ]
+              }
+            ]
+          },
+          {
+            "content": "六、MVP规划与路线图",
+            "children": [
+              { "content": "MVP（0-3月）：注册认证 → 订阅付费 → 内容发布 → 基础发现流 → 私信PPV → 快速提现" },
+              { "content": "第二阶段（3-6月）：直播+Stream Goal → FYP个性化推荐引擎 → 24h Story → 免费关注层" },
+              { "content": "第三阶段（6-12月）：AI工具 → 创作者代币/激励体系 → 更多变现方式 → 高端VIP/GFE支持" }
+            ]
+          },
+          {
+            "content": "七、技术架构考量",
+            "children": [
+              { "content": "高可用媒体存储与CDN" },
+              { "content": "DRM与防盗链技术" },
+              { "content": "敏感内容检测AI" },
+              { "content": "支付路由与收单渠道冗余" },
+              { "content": "隐私数据加密与合规存储" }
+            ]
+          },
+          {
+            "content": "八、运营与增长策略",
+            "children": [
+              { "content": "冷启动：邀请制入驻头部创作者，迁移激励" },
+              { "content": "创作者招募与维护：代理商会合作，培训支持" },
+              { "content": "粉丝端推广：社交媒体营销，联盟营销分佣" },
+              { "content": "社区与信任建设：透明审核标准，品牌心智" }
+            ]
+          }
+        ]
+      };
+      
+      const mm = markmap.Markmap.create(
+        "svg#mindmap",
+        {
+          color: () => {
+            const colors = ['#f472b6', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#fb923c', '#f87171', '#2dd4bf'];
+            return colors[Math.floor(Math.random() * colors.length)];
+          },
+          initialExpandLevel: 10,
+          maxWidth: 400,
+          nodeMinHeight: 24,
+          spacingVertical: 4,
+          spacingHorizontal: 10,
+          paddingX: 12,
+          paddingY: 6,
+          style: "font-size: 12px; line-height: 1.4;",
+          zoom: true,
+          zoomOnClick: true,
+          pan: true,
+          fitRatio: 0.85
+        },
+        data
+      );
+      
+      setTimeout(() => {
+        mm.fit();
+      }, 100);
+      
+      // Toolbar
+      setTimeout(() => {
+        const { Toolbar } = markmap;
+        const toolbar = Toolbar.create(mm);
+        toolbar.setAttribute('style', 'position:absolute;bottom:20px;right:20px');
+        document.body.append(toolbar);
+      }, 200);
+    })();
+  </script>
+</body>
+</html>

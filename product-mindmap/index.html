@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>产品立项方案 · 思维导图</title>
+  <style>
+    * { margin: 0; padding: 0; }
+    body { background: #27272a; font-family: system-ui, sans-serif; }
+    #mindmap { width: 100vw; height: 100vh; display: block; }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.17.0/dist/style.css">
+</head>
+<body>
+  <svg id="mindmap"></svg>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.17.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.17.0"></script>
+  <script>
+    (async () => {
+      const markdown = `
+# 产品立项方案
+## 市场分析
+- 目标用户：中小企业产品团队
+- 市场规模：120亿/年
+## 技术可行性
+- 前端：Markmap + D3
+- 后端：云函数
+## 项目计划
+### 第一阶段（4周）
+- 需求梳理与原型
+### 第二阶段（6周）
+- 开发与测试
+## 风险与对策
+- 技术风险：前期调研2周
+      `;
+      const transformer = new markmap.Transformer();
+      const { root } = transformer.transform(markdown);
+      const mm = new markmap.Markmap(document.querySelector('#mindmap'), {
+        color: () => '#60a5fa',
+        initialExpandLevel: 2
+      });
+      mm.setData(root);
+      mm.fit();
+    })();
+  </script>
+</body>
+</html>

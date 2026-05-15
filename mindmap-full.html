@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoGoFans · 产品立项思维导图</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: #1a1a2e; 
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+    }
+    #container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #mindmap-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #e0e0e0;
+      font-size: 18px;
+      text-align: center;
+      z-index: 1;
+    }
+    #loading .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: #f472b6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    #error-msg {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #f87171;
+      font-size: 16px;
+      text-align: center;
+      background: rgba(0,0,0,0.8);
+      padding: 30px;
+      border-radius: 12px;
+      z-index: 10;
+      max-width: 80%;
+    }
+    #error-msg a {
+      color: #60a5fa;
+      display: inline-block;
+      margin-top: 16px;
+      padding: 10px 24px;
+      background: #2a2a4e;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    #error-msg a:hover { background: #3a3a5e; }
+    .markmap-dark { background: #1a1a2e; color: #e0e0e0; }
+    #retry-btn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 8px 20px;
+      background: #f472b6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #retry-btn:hover { background: #e060a0; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="loading">
+      <div class="spinner"></div>
+      <div>正在加载思维导图...</div>
+    </div>
+    <div id="error-msg">
+      <div style="font-size: 24px; margin-bottom: 12px;">⚠️</div>
+      <div>加载思维导图库失败</div>
+      <div style="font-size: 13px; margin-top: 8px; color: #aaa;">请检查网络连接后重试</div>
+      <a href="#" onclick="location.reload()">重新加载</a>
+    </div>
+    <div id="mindmap-container">
+      <svg id="mindmap" style="width:100%;height:100%;display:block;"></svg>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+  
+  <script>
+    (() => {
+      const data = {
+        "content": "GoGoFans · 产品立项方案",
+        "children": [
+          {
+            "content": "一、项目主题与背景",
+            "children": [
+              { "content": "项目名称：GoGoFans" },
+              { "content": "项目定位：合规软色情原创内容变现社区" },
+              {
+                "content": "市场背景",
+                "children": [
+                  { "content": "创作者经济崛起，粉丝为亲密感和独家内容付费意愿强" },
+                  { "content": "OnlyFans和Fansly验证市场但面临政策风险与创作者流失" },
+                  { "content": "软色情赛道存在差异化机会" }
+                ]
+              },
+              {
+                "content": "市场竞品",
+                "children": [
+                  {
+                    "content": "OnlyFans",
+                    "children": [
+                      { "content": "泛内容变现平台，成人内容为主导" },
+                      { "content": "平台抽成20%" },
+                      { "content": "品牌强但政策摇摆" },
+                      { "content": "单一付费墙，弱发现机制" }
+                    ]
+                  },
+                  {
+                    "content": "Fansly",
+                    "children": [
+                      { "content": "成人内容优先，创作者工具丰富" },
+                      { "content": "平台抽成20%（可调）" },
+                      { "content": "多层订阅+FYP推荐算法" },
+                      { "content": "小费最低$1，提现1-2天" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "content": "行业痛点",
+                "children": [
+                  { "content": "内容审核不透明" },
+                  { "content": "支付渠道受限" },
+                  { "content": "成人内容标签带来合规隐患" }
+                ]
+              },
+              { "content": "产品定位：为创作者与粉丝构建合规、安全、高互动的软色情内容生态" },
+              { "content": "目标用户：头部及中腰部原创软色情创作者 + 愿意付费的粉丝（18+验证）" },
+              { "content": "项目目标：6个月内上线MVP · 获取种子创作者 · 实现正向流水" }
+            ]
+          },
+          {
+            "content": "二、页面整体架构",
+            "children": [
+              {
+                "content": "用户端（粉丝）",
+                "children": [
+                  {
+                    "content": "发现页",
+                    "children": [
+                      { "content": "推荐流（For You / FYP）" },
+                      { "content": "热门创作者榜单" },
+                      { "content": "分类标签浏览" },
+                      { "content": "搜索（创作者、标签）" }
+                    ]
+                  },
+                  {
+                    "content": "创作者主页",
+                    "children": [
+                      { "content": "封面/头像/简介" },
+                      { "content": "多层级订阅方案展示" },
+                      { "content": "内容预览（免费/付费）" },
+                      { "content": "作品合集" }
+                    ]
+                  },
+                  {
+                    "content": "内容详情：图片/视频播放器 · 点赞/评论/收藏 · 付费解锁（PPV）" 
+                  },
+                  {
+                    "content": "消息中心：付费私信 · 图片/语音消息 · 已购内容提醒"
+                  },
+                  {
+                    "content": "订阅管理：当前订阅 · 到期提醒 · 自动续费设置"
+                  },
+                  {
+                    "content": "个人中心：资料编辑 · 钱包 · 购买记录 · 收藏夹 · 系统设置"
+                  }
+                ]
+              },
+              {
+                "content": "创作者端",
+                "children": [
+                  { "content": "首页数据看板：收入概览 · 粉丝增长 · 内容表现分析" },
+                  { "content": "内容管理：发布图文/视频/音频 · 付费墙设置 · 直播预告 · 草稿箱" },
+                  { "content": "粉丝管理：粉丝列表 · 互动数据 · 付费私信/群发" },
+                  { "content": "收益中心：收入明细 · 提现设置 · 分成比例" },
+                  { "content": "主页装修：头像/封面 · 简介 · 订阅层级 · 服务菜单" }
+                ]
+              },
+              {
+                "content": "管理后台",
+                "children": [
+                  { "content": "内容审核：AI初筛 · 人工复审 · 敏感内容分级" },
+                  { "content": "用户管理：创作者认证 · 年龄验证 · 封禁处罚" },
+                  { "content": "财务系统：订单管理 · 分账结算 · 提现处理" },
+                  { "content": "数据运营：大盘数据 · 用户行为 · 创作者活跃度" },
+                  { "content": "系统配置：标签库 · 规则引擎 · 支付渠道" }
+                ]
+              }
+            ]
+          },
+          {
+            "content": "三、核心功能范围",
+            "children": [
+              {
+                "content": "创作者工具",
+                "children": [
+                  { "content": "多媒体发布（图片/短视频/长视频/音频）" },
+                  { "content": "付费墙（月度订阅/单帖付费/合集付费/免费预览）" },
+                  { "content": "直播互动（聊天、才艺）" },
+                  { "content": "私信变现（付费消息 + 付费锁定内容）" },
+                  { "content": "小费/打赏" },
+                  { "content": "推广工具（折扣/试用链接/推荐计划）" }
+                ]
+              },
+              {
+                "content": "粉丝体验",
+                "children": [
+                  { "content": "订阅解锁全部内容" },
+                  { "content": "单次购买（PPV）" },
+                  { "content": "点赞/评论/收藏/分享" },
+                  { "content": "私密聊天" },
+                  { "content": "订阅到期提醒 + 自动续费" },
+                  { "content": "内容水印 + 防截屏/防录屏" }
+                ]
+              },
+              {
+                "content": "平台核心",
+                "children": [
+                  { "content": "用户认证：注册登录 · 18+验证 · 创作者认证" },
+                  { "content": "支付集成：信用卡 · 加密货币 · 本地支付 · 风控策略" },
+                  { "content": "内容安全：AI鉴黄 · 人工审核 · 违规分级" },
+                  { "content": "推荐算法：兴趣标签 · 创作者热度 · 互动率" },
+                  { "content": "通知系统：推送 · 邮件 · 站内信" },
+                  { "content": "合规风控：反洗钱 · GDPR · 支付风控" }
+                ]
+              },
+              {
+                "content": "MVP范围",
+                "children": [
+                  { "content": "注册登录 + 年龄验证" },
+                  { "content": "创作者认证申请" },
+                  { "content": "图文/视频发布 + 付费墙" },
+                  { "content": "粉丝订阅与解锁观看" },
+                  { "content": "简单推荐流（标签+热度）" },
+                  { "content": "收益记录与提现" },
+                  { "content": "基础AI+人工审核" }
+                ]
+              }
+            ]
+          },
+          {
+            "content": "四、差异化策略",
+            "children": [
+              { "content": "更低的平台抽成或阶梯费率" },
+              { "content": "内置智能推荐引擎（类FYP）降低对外部引流依赖" },
+              { "content": "多层级订阅 + 免费关注混合模式" },
+              { "content": "私信PPV + 直播众筹等促活工具" },
+              { "content": "AI辅助创作者工具（自动标签/优化）" },
+              { "content": "小费低门槛化（$1起打赏）" },
+              { "content": "超快速提现（1个工作日内）" },
+              { "content": "更严格的内容保护和付费墙防御" }
+            ]
+          },
+          {
+            "content": "五、商业模式",
+            "children": [
+              {
+                "content": "收入来源",
+                "children": [
+                  { "content": "平台抽佣（订阅/PPV/打赏/私信/直播）" },
+                  { "content": "广告收入（非成人区域）" },
+                  { "content": "增值服务（数据分析/推广助推）" },
+                  { "content": "创作者入驻/认证费（可选）" }
+                ]
+              },
+              {
+                "content": "定价与抽成策略",
+                "children": [
+                  { "content": "默认抽成X%，达业绩门槛降抽成" },
+                  { "content": "粉丝端支付手续费承担方案" }
+                ]
+              },
+              {
+                "content": "创作者激励体系",
+                "children": [
+                  { "content": "新人扶持基金" },
+                  { "content": "内容质量奖励" },
+                  { "content": "推荐流量加权规则" }
+                ]
+              }
+            ]
+          },
+          {
+            "content": "六、MVP规划与路线图",
+            "children": [
+              { "content": "MVP（0-3月）：注册认证 → 订阅付费 → 内容发布 → 发现流 → 私信PPV → 快速提现" },
+              { "content": "第二阶段（3-6月）：直播 → FYP推荐 → 24h Story → 免费关注层" },
+              { "content": "第三阶段（6-12月）：AI工具 → 创作者代币 → 更多变现 → VIP/GFE" }
+            ]
+          },
+          {
+            "content": "七、技术架构考量",
+            "children": [
+              { "content": "高可用媒体存储与CDN" },
+              { "content": "DRM与防盗链技术" },
+              { "content": "敏感内容检测AI" },
+              { "content": "支付路由与收单渠道冗余" },
+              { "content": "隐私数据加密与合规存储" }
+            ]
+          },
+          {
+            "content": "八、运营与增长策略",
+            "children": [
+              { "content": "冷启动：邀请制入驻头部创作者，迁移激励" },
+              { "content": "创作者招募：代理商会合作，培训支持" },
+              { "content": "粉丝推广：社交媒体营销，联盟营销分佣" },
+              { "content": "社区信任：透明审核标准，品牌心智" }
+            ]
+          }
+        ]
+      };
+
+      let mm = null;
+      let retryCount = 0;
+      const maxRetries = 3;
+
+      function initMindmap() {
+        const loading = document.getElementById('loading');
+        const errorMsg = document.getElementById('error-msg');
+
+        if (typeof markmap === 'undefined' || typeof markmap.Markmap === 'undefined') {
+          retryCount++;
+          if (retryCount <= maxRetries) {
+            setTimeout(initMindmap, 2000);
+          } else {
+            loading.style.display = 'none';
+            errorMsg.style.display = 'block';
+          }
+          return;
+        }
+
+        loading.style.display = 'none';
+        errorMsg.style.display = 'none';
+
+        try {
+          mm = markmap.Markmap.create(
+            "svg#mindmap",
+            {
+              color: () => {
+                const colors = ['#f472b6', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#fb923c', '#f87171', '#2dd4bf'];
+                return colors[Math.floor(Math.random() * colors.length)];
+              },
+              initialExpandLevel: 10,
+              maxWidth: 400,
+              nodeMinHeight: 24,
+              spacingVertical: 5,
+              spacingHorizontal: 12,
+              paddingX: 12,
+              paddingY: 6,
+              style: "font-size: 12px; line-height: 1.4;",
+              zoom: true,
+              zoomOnClick: true,
+              pan: true,
+              fitRatio: 0.85
+            },
+            data
+          );
+
+          setTimeout(() => { mm.fit(); }, 300);
+
+          setTimeout(() => {
+            try {
+              const { Toolbar } = markmap;
+              const toolbar = Toolbar.create(mm);
+              toolbar.setAttribute('style', 'position:fixed;bottom:20px;right:20px;z-index:100');
+              document.body.append(toolbar);
+            } catch(e) { /* toolbar optional */ }
+          }, 500);
+        } catch(e) {
+          errorMsg.innerHTML = '<div style="font-size:24px;margin-bottom:12px;">❌</div><div>加载失败：' + e.message + '</div><button id="retry-btn" onclick="location.reload()">重试</button>';
+          errorMsg.style.display = 'block';
+          loading.style.display = 'none';
+        }
+      }
+
+      window.addEventListener('load', () => {
+        setTimeout(initMindmap, 500);
+      });
+
+      // 如果页面已经加载完毕
+      if (document.readyState === 'complete') {
+        setTimeout(initMindmap, 500);
+      }
+    })();
+  </script>
+</body>
+</html>
